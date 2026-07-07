@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1 class="mb-4">
+        Welcome {{ user.first_name|default:user.username }}
+    </h1>
+
+    <div class="row">
+
+        <div class="col-md-6 col-lg-4 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h4>🏁 Driver Profile</h4>
+
+                    <p>Create and manage your driver details.</p>
+
+                    <a href="#" class="btn btn-primary">
+                        Manage Profile
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h4>🚗 Co Drivers</h4>
+
+                    <p>Add up to five navigators.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h4>📅 My Events</h4>
+
+                    <p>Your upcoming entries.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
