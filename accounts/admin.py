@@ -1,12 +1,13 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
-from .models import DriverProfile
-from .models import EmergencyContact
+from .models import DriverProfile, EmergencyContact
+
 
 # Register your models here.
 
 admin.register(DriverProfile)
-class DriverProfileAdmin(admin.ModelAdmin):
+class DriverProfileAdmin(ModelAdmin):
 
     list_display = (
         "user",
@@ -22,7 +23,7 @@ class DriverProfileAdmin(admin.ModelAdmin):
 
 
 @admin.register(EmergencyContact)
-class EmergencyContactAdmin(admin.ModelAdmin):
+class EmergencyContactAdmin(ModelAdmin):
 
     list_display = (
         "name",

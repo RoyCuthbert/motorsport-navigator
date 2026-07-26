@@ -53,6 +53,9 @@ LOCAL_APPS = [
 ]
 
 INSTALLED_APPS = [
+
+    'unfold',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -181,3 +184,21 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+UNFOLD = {
+
+    "SITE_TITLE": "Motorsport Navigator",
+
+    "SITE_HEADER": "Motorsport Navigator",
+
+    "SITE_SUBHEADER": "Administration",
+
+    "SITE_SYMBOL": "flag",
+
+    "SHOW_HISTORY": True,
+
+    "SHOW_VIEW_ON_SITE": True,
+
+    "ENVIRONMENT": "Development",
+
+}
