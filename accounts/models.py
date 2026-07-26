@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class DriverProfile(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete = models.CASCADE,
         related_name = "driver_profile"
     )
@@ -54,18 +54,28 @@ class DriverProfile(models.Model):
         blank=True
     )
 
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
+
     # Emergency Contact
 
-    emergency_contact = models.CharField(max_length=100)
+class EmergencyContact(models.Model):
 
-    emergency_phone = models.CharField(max_length=20)
+    profile = models.OneToOneField(
+        DriverProfile,
+        on_delete=models.CASCADE
+    )
 
-    created_on = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=100)
 
-    updated_on = models.DateTimeField(auto_now=True)
+    relationship = models.CharField(max_length=50)
 
-    class Meta:
-        ordering = ["last_name"]
+    phone = models.CharField(max_length=20)
+
+    alternative_phone = models.CharField(
+        max_length=20,
+        blank=True
+    )
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.name
