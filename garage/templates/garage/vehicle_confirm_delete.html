@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<div class="card shadow">
+
+<div class="card-body text-center">
+
+<h2>
+
+Delete Vehicle
+
+</h2>
+
+<p>
+
+Are you sure you wish to delete
+
+<strong>
+
+{{ vehicle }}
+
+</strong>
+
+?
+
+</p>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<button class="btn btn-danger">
+
+Delete
+
+</button>
+
+<a href="{% url 'garage' %}"
+
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

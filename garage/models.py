@@ -1,3 +1,4 @@
+from datetime import date
 from django.conf import settings
 from django.db import models
 
@@ -17,6 +18,22 @@ class Vehicle(models.Model):
         ("Automatic", "Automatic")
     ]
 
+    FUEL_TYPES = [
+    ("Petrol", "Petrol"),
+    ("Diesel", "Diesel"),
+    ("Electric", "Electric"),
+    ("Hybrid", "Hybrid"),
+]
+
+    VEHICLE_CLASS = [
+        ("Road", "Road"),
+        ("Historic", "Historic"),
+        ("Autotest", "Autotest"),
+        ("Autosolo", "Autosolo"),
+        ("Targa", "Targa"),
+        ("Stage", "Stage"),
+    ]
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete = models.CASCADE,
@@ -28,6 +45,7 @@ class Vehicle(models.Model):
         unique=True,    
     )
 
+    nickname = models.CharField(max_length=50)
     make = models.CharField(max_length=50)
     model = models.CharField(max_length=50)
     year = models.PositiveIntegerField()
@@ -41,6 +59,19 @@ class Vehicle(models.Model):
             max_length=20,
             choices = TRANSMISSION,
     )
+    vehicle_class = models.CharField(
+        max_length=20,
+        choices=VEHICLE_CLASS,
+        default="Road",
+    )
+    
+    fuel_type = models.CharField(
+        max_length=20,
+        choices=FUEL_TYPES,
+        default="Petrol",
+    )
+
+
     logbook_number = models.CharField(
         max_length=100,
         blank=True,
@@ -57,10 +88,14 @@ class Vehicle(models.Model):
         null = True,
         blank = True,
     )
-    image = models.ImageField(
-        upload_to="vehicles/",
+    vehicle_image = models.ImageField(
+        upload_to="garage/",
         blank=True,
         null=True,
+    )
+
+    active = models.BooleanField(
+        default=True,
     )
 
     is_default = models.BooleanField(
@@ -77,6 +112,27 @@ class Vehicle(models.Model):
 
     class Meta:
         ordering = ["make", "model"]
+
+    @property
+    def insurance_valid(self):
+        if self.insurance_expiry:
+            return self.insurance_expiry >= date.today()
+        return False
+    
+    
+    @property
+    def mot_valid(self):
+        if self.mot_expiry:
+            return self.mot_expiry >= date.today()
+        return False
+    
+    @property
+    def tax_valid(self):
+        if self.tax_expiry:
+            return self.tax_expiry >= date.today()
+        return False
+
+    from datetime import date
 
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"
