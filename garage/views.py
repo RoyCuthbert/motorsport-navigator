@@ -66,10 +66,9 @@ def add_vehicle(request):
 
     return render(
         request,
-        "garage/vehicle_form.html",
+        "garage/add_vehicle.html",
         {
             "form": form,
-            "title": "Add Vehicle",
         },
     )
 

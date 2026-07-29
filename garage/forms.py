@@ -12,8 +12,6 @@ class VehicleForm(forms.ModelForm):
 
         exclude = (
             "owner",
-            "created_on",
-            "updated_on",
         )
 
     def __init__(self, *args, **kwargs):
