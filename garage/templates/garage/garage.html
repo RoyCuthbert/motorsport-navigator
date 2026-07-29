@@ -25,7 +25,7 @@
 
         </div>
 
-        <a href="{% url 'add_vehicle' %}" class="btn btn-danger btn-lg">
+        <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg">
 
             <i class="bi bi-plus-circle"></i>
 
@@ -283,13 +283,22 @@
 
                 <div class="col-md-3 mb-3">
 
-                    <a href="{% url 'add_vehicle' %}" class="btn btn-danger w-100">
+                    <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger w-100">
 
                         <i class="bi bi-plus-circle"></i><br>
 
                         Add Vehicle
 
                     </a>
+
+                    <a href="{% url 'garage:repairs' %}" class="btn btn-outline-dark btn-lg">
+
+                        <i class="bi bi-tools"></i>
+
+                        Repairs Centre
+
+                    </a>
+
 
                 </div>
 
@@ -453,18 +462,46 @@
                         {% endif %}
 
                     </div>
+                    <h6 class="mt-4">
+                        Competition Readiness
+                    </h6>
+
+                    <div class="progress mb-2" style="height:25px;">
+
+                        <div class="progress-bar bg-success" role="progressbar"
+                            style="width: {{ vehicle.readiness_score }}%;">
+
+                            {{ vehicle.readiness_score }}%
+
+                        </div>
+                    </div>
+
+                    <p class="mb-1">
+                        🟡 Minor Repairs:
+                        <strong>{{ vehicle.minor_repairs }}</strong>
+                    </p>
+
+                    <p class="mb-1">
+                        🟠 Major Repairs:
+                        <strong>{{ vehicle.major_repairs }}</strong>
+                    </p>
+
+                    <p>
+                        🔴 Critical Repairs:
+                        <strong>{{ vehicle.critical_repairs }}</strong>
+                    </p>
 
                 </div>
 
                 <div class="card-footer d-grid gap-2">
 
-                    <a href="{% url 'edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
+                    <a href="{% url 'garage:edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
 
                         ✏ Edit Vehicle
 
                     </a>
 
-                    <a href="{% url 'delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
+                    <a href="{% url 'garage:delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
 
                         🗑 Delete Vehicle
 
@@ -498,7 +535,7 @@
 
                 </p>
 
-                <a href="{% url 'add_vehicle' %}" class="btn btn-danger btn-lg mt-3">
+                <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg mt-3">
 
                     <i class="bi bi-plus-circle"></i>
 

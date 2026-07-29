@@ -132,14 +132,55 @@ class Vehicle(models.Model):
             return self.tax_expiry >= date.today()
         return False
 
-    from datetime import date
+    @property
+    def minor_repairs(self):
+        return self.repairs.filter(
+            severity="Minor",
+            status="Outstanding"
+        ).count()
+    
+    
+    @property
+    def major_repairs(self):
+        return self.repairs.filter(
+            severity="Major",
+            status="Outstanding"
+        ).count()
+    
+    
+    @property
+    def critical_repairs(self):
+        return self.repairs.filter(
+            severity="Critical",
+            status="Outstanding"
+        ).count()
+    
+    @property
+    def readiness_score(self):
+    
+        score = 100
+    
+        score -= self.minor_repairs * 3
+        score -= self.major_repairs * 10
+        score -= self.critical_repairs * 25
+
+        if not self.mot_valid:
+            score -= 20
+
+        if not self.insurance_valid:
+            score -= 20
+
+        if not self.tax_valid:
+            score -= 15
+    
+        return max(score, 0)
 
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"
 
 class Repair(models.Model):
 
-    PRIORITY = [
+    REPAIR_LEVELS = [
         ("Critical", "Critical"),
         ("Major", "Major"),
         ("Minor", "Minor"),
@@ -164,8 +205,7 @@ class Repair(models.Model):
 
     priority = models.CharField(
         max_length=20,
-        choices=PRIORITY,
-        default="Minor",
+        choices=REPAIR_LEVELS,
     )
 
     status = models.CharField(
@@ -177,11 +217,10 @@ class Repair(models.Model):
     estimated_cost = models.DecimalField(
         max_digits=8,
         decimal_places=2,
-        null=True,
-        blank=True,
+        default=0,
     )
 
-    reported_on = models.DateField(
+    reported_on = models.DateTimeField(
         auto_now_add=True,
     )
 
@@ -190,8 +229,7 @@ class Repair(models.Model):
         blank=True,
     )
 
-    class Meta:
-        ordering = ["priority", "-reported_on"]
+    
 
     def __str__(self):
-        return f"{self.vehicle.registration} - {self.title}"
+        return self.title

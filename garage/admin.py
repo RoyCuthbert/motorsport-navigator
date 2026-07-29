@@ -15,10 +15,10 @@ class VehicleAdmin(admin.ModelAdmin):
     )
 
 @admin.register(Repair)
-class RepairAdmin(admin.ModelAdmin)
+class RepairAdmin(admin.ModelAdmin):
 
     list_display = (
-        "Vehicle",
+        "vehicle",
         "title",
         "priority",
         "status",
@@ -31,5 +31,5 @@ class RepairAdmin(admin.ModelAdmin)
 
     search_fields = (
         "title",
-        "vehicle_registration",
+        "vehicle_registration", 
     )

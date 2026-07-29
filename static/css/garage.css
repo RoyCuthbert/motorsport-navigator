@@ -57,3 +57,19 @@ color:#dc3545;
 font-weight:bold;
 
 }
+
+.summary-card{
+
+    transition:.3s;
+
+    border-radius:15px;
+
+}
+
+.summary-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.2);
+
+}
