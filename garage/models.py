@@ -10,7 +10,7 @@ class Vehicle(models.Model):
         ("FWD", "Front Wheel Drive"),
         ("RWD", "Rear Wheel Drive"),
         ("AWD", "All Wheel Drive"),
-        ("4WD", "For Wheel Drive"),
+        ("4WD", "Four Wheel Drive"),
     ]
 
     TRANSMISSION = [

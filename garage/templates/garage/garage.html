@@ -1,94 +1,329 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
 <div class="container py-5">
 
-    <div class="d-flex justify-content-between mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
 
-        <h1>My Garage</h1>
+        <div>
 
-        <a href="{% url 'add_vehicle' %}" class="btn btn-danger">
+            <h1 class="fw-bold text-danger">
+
+                <i class="bi bi-car-front-fill"></i>
+
+                My Garage
+
+            </h1>
+
+            <p class="text-muted">
+
+                Manage all of your competition vehicles in one place.
+
+            </p>
+
+        </div>
+
+        <a href="{% url 'add_vehicle' %}" class="btn btn-danger btn-lg">
+
+            <i class="bi bi-plus-circle"></i>
 
             Add Vehicle
 
         </a>
 
     </div>
+    <div class="row mb-4">
 
-    <div class="row">
+        <div class="col-md-3 mb-3">
 
-        {% for vehicle in vehicles %}
-
-        <div class="col-lg-4 mb-4">
-
-            <div class="card shadow h-100">
-
-                {% if vehicle.image %}
-
-                <img src="{{ vehicle.image.url }}" class="card-img-top">
-
-                {% endif %}
+            <div class="card summary-card shadow-sm text-center h-100">
 
                 <div class="card-body">
 
-                    <h4>{{ vehicle.make }} {{ vehicle.model }}</h4>
+                    <i class="bi bi-car-front-fill display-4 text-danger"></i>
 
-                    <p>{{ vehicle.registration }}</p>
+                    <h2 class="mt-3">
 
-                    <p>{{ vehicle.engine_size }}</p>
+                        {{ vehicles.count }}
 
-                    <p>{{ vehicle.drive_type }}</p>
+                    </h2>
 
-                    <p>{{ vehicle.transmission }}</p>
+                    <p class="text-muted mb-0">
 
-                    <div class="mt-3">
+                        Registered Vehicles
 
-                        {% if vehicle.mot_valid %}
-                        <p class="text-success">
-                            ✔ MOT Valid
-                        </p>
+                    </p>
+
+                    <small class="text-secondary">
+
+                        Ready for Competition
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="card summary-card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <i class="bi bi-star-fill display-4 text-warning"></i>
+
+                    <h2>
+
+                        1
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        Default Vehicle
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="card summary-card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <i class="bi bi-calendar-check display-4 text-success"></i>
+
+                    <h2>
+
+                        0
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        MOT Due
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="card summary-card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <i class="bi bi-speedometer2 display-4 text-primary"></i>
+
+                    <h2>
+
+                        100%
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        Garage Ready
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4 class="mb-0">
+                <i class="bi bi-clipboard-check"></i>
+                Garage Setup Progress
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Driver Profile</span>
+
+                        <span class="badge bg-success">
+                            Complete
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Competition Vehicle</span>
+
+                        {% if vehicles.count > 0 %}
+                        <span class="badge bg-success">Complete</span>
                         {% else %}
-                        <p class="text-danger">
-                            ❌ MOT Expired
-                        </p>
-                        {% endif %}
-
-                        {% if vehicle.insurance_valid %}
-                        <p class="text-success">
-                            ✔ Insurance Valid
-                        </p>
-                        {% else %}
-                        <p class="text-danger">
-                            ❌ Insurance Expired
-                        </p>
-                        {% endif %}
-
-                        {% if vehicle.tax_valid %}
-                        <p class="text-success">
-                            ✔ Tax Valid
-                        </p>
-                        {% else %}
-                        <p class="text-danger">
-                            ❌ Tax Expired
-                        </p>
+                        <span class="badge bg-danger">Required</span>
                         {% endif %}
 
                     </div>
 
                 </div>
 
-                <div class="card-footer">
+                <div class="col-md-4 mb-3">
 
-                    <a href="{% url 'edit_vehicle' vehicle.id %}" class="btn btn-warning">
+                    <div class="d-flex justify-content-between">
 
-                        Edit
+                        <span>Co-Drivers</span>
+
+                        <span class="badge bg-warning text-dark">
+
+                            Coming Soon
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Membership</span>
+
+                        <span class="badge bg-warning text-dark">
+
+                            Coming Soon
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Competition Licence</span>
+
+                        <span class="badge bg-warning text-dark">
+
+                            Coming Soon
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Favourite Clubs</span>
+
+                        <span class="badge bg-warning text-dark">
+
+                            Coming Soon
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+
+        <div class="card-header bg-danger text-white">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-lightning-charge-fill"></i>
+
+                Quick Actions
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3 mb-3">
+
+                    <a href="{% url 'add_vehicle' %}" class="btn btn-danger w-100">
+
+                        <i class="bi bi-plus-circle"></i><br>
+
+                        Add Vehicle
 
                     </a>
 
-                    <a href="{% url 'delete_vehicle' vehicle.id %}" class="btn btn-danger">
+                </div>
 
-                        Delete
+                <div class="col-md-3 mb-3">
+
+                    <a href="#" class="btn btn-outline-dark w-100">
+
+                        <i class="bi bi-people-fill"></i><br>
+
+                        Co-Drivers
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <a href="#" class="btn btn-outline-dark w-100">
+
+                        <i class="bi bi-flag-fill"></i><br>
+
+                        Find Events
+
+                    </a>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <a href="#" class="btn btn-outline-dark w-100">
+
+                        <i class="bi bi-star-fill"></i><br>
+
+                        Favourite Clubs
 
                     </a>
 
@@ -98,13 +333,178 @@
 
         </div>
 
+    </div>
+
+    <div class="row">
+
+        <h2 class="fw-bold mb-3">
+
+            Your Competition Vehicles
+
+        </h2>
+
+        {% for vehicle in vehicles %}
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card vehicle-card shadow h-100">
+
+                {% if vehicle.is_default %}
+                <span class="badge bg-success mb-2">
+                    ⭐ Default Competition Vehicle
+                </span>
+                {% endif %}
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5 class="mb-0">
+
+                        {{ vehicle.make }}
+
+                        {{ vehicle.model }}
+
+
+                    </h5>
+
+                </div>
+
+                {% if vehicle.vehicle_image %}
+                <img src="{{ vehicle.vehicle_image.url }}" class="card-img-top vehicle-img"
+                    alt="{{ vehicle.make }} {{ vehicle.model }}">
+                {% else %}
+                <img src="{% static 'images/default-car.jpg' %}" class="card-img-top vehicle-img"
+                    alt="Default vehicle image">
+                {% endif %}
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-sm align-middle">
+
+                                <tbody>
+
+                                    <tr>
+                                        <th>Registration</th>
+                                        <td>{{ vehicle.registration }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Nickname</th>
+                                        <td>{{ vehicle.nickname }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Colour</th>
+                                        <td>{{ vehicle.colour }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Year</th>
+                                        <td>{{ vehicle.year }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Engine</th>
+                                        <td>{{ vehicle.engine_size }} cc</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Drive</th>
+                                        <td>{{ vehicle.get_drive_type_display }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Transmission</th>
+                                        <td>{{ vehicle.transmission }}</td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="border rounded p-3 bg-light">
+
+                        <h6 class="mb-3">
+                            Vehicle Status
+                        </h6>
+
+                        {% if vehicle.mot_valid %}
+                        <p class="text-success mb-1">✔ MOT Valid</p>
+                        {% else %}
+                        <p class="text-danger mb-1">❌ MOT Expired</p>
+                        {% endif %}
+
+                        {% if vehicle.insurance_valid %}
+                        <p class="text-success mb-1">✔ Insurance Valid</p>
+                        {% else %}
+                        <p class="text-danger mb-1">❌ Insurance Expired</p>
+                        {% endif %}
+
+                        {% if vehicle.tax_valid %}
+                        <p class="text-success mb-0">✔ Tax Valid</p>
+                        {% else %}
+                        <p class="text-danger mb-0">❌ Tax Expired</p>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <div class="card-footer d-grid gap-2">
+
+                    <a href="{% url 'edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
+
+                        ✏ Edit Vehicle
+
+                    </a>
+
+                    <a href="{% url 'delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
+
+                        🗑 Delete Vehicle
+
+                    </a>
+                    <div class="text-center small text-muted mt-3">
+
+                        Added
+
+                        {{ vehicle.created_on|date:"d M Y" }}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
         {% empty %}
 
-        <div class="col">
+        <div class="col-12">
 
-            <div class="alert alert-info">
+            <div class="card shadow-sm border-0 text-center p-5">
 
-                No vehicles have been added yet.
+                <i class="bi bi-car-front display-1 text-danger mb-3"></i>
+
+                <h3>No Vehicles Added</h3>
+
+                <p class="text-muted">
+
+                    Start building your digital garage by adding your first competition vehicle.
+
+                </p>
+
+                <a href="{% url 'add_vehicle' %}" class="btn btn-danger btn-lg mt-3">
+
+                    <i class="bi bi-plus-circle"></i>
+
+                    Add My First Vehicle
+
+                </a>
 
             </div>
 
