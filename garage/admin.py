@@ -1,10 +1,10 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
+from .models import Vehicle, Repair
 
-from .models import Vehicle
 # Register your models here.
+
 @admin.register(Vehicle)
-class VehicleAdmin(ModelAdmin):
+class VehicleAdmin(admin.ModelAdmin):
 
     list_display = (
         "registration",
@@ -14,14 +14,22 @@ class VehicleAdmin(ModelAdmin):
         "is_default",
     )
 
-    search_fields = (
-        "registration",
-        "make",
-        "model",
+@admin.register(Repair)
+class RepairAdmin(admin.ModelAdmin)
+
+    list_display = (
+        "Vehicle",
+        "title",
+        "priority",
+        "status",
     )
 
     list_filter = (
-        "make",
-        "drive_type",
-        "transmission",
+        "priority",
+        "status",
+    )
+
+    search_fields = (
+        "title",
+        "vehicle_registration",
     )

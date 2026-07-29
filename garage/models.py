@@ -136,3 +136,62 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"
+
+class Repair(models.Model):
+
+    PRIORITY = [
+        ("Critical", "Critical"),
+        ("Major", "Major"),
+        ("Minor", "Minor"),
+        ("Advisory", "Advisory"),
+    ]
+
+    STATUS = [
+        ("Outstanding", "Outstanding"),
+        ("In Progress", "In Progress"),
+        ("Completed", "Completed"),
+    ]
+
+    vehicle = models.ForeignKey(
+        Vehicle,
+        on_delete=models.CASCADE,
+        related_name="repairs",
+    )
+
+    title = models.CharField(max_length=100)
+
+    description = models.TextField(blank=True)
+
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY,
+        default="Minor",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS,
+        default="Outstanding",
+    )
+
+    estimated_cost = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    reported_on = models.DateField(
+        auto_now_add=True,
+    )
+
+    completed_on = models.DateField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ["priority", "-reported_on"]
+
+    def __str__(self):
+        return f"{self.vehicle.registration} - {self.title}"
