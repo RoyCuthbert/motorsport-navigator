@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="fw-bold text-danger mb-4">
+        🏁 Event Preparation Centre
+    </h1>
+
+    <p class="text-muted mb-5">
+        Everything you need before competing.
+    </p>
+
+    <div class="row">
+
+        {% for vehicle in vehicles %}
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5>
+
+                        {{ vehicle.make }}
+                        {{ vehicle.model }}
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <h2 class="display-4">
+
+                        {{ vehicle.readiness_score }}%
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        Competition Readiness
+
+                    </p>
+
+                    <hr>
+
+                    {% if vehicle.mot_valid %}
+                        <p class="text-success">✔ MOT</p>
+                    {% else %}
+                        <p class="text-danger">✖ MOT</p>
+                    {% endif %}
+
+                    {% if vehicle.insurance_valid %}
+                        <p class="text-success">✔ Insurance</p>
+                    {% else %}
+                        <p class="text-danger">✖ Insurance</p>
+                    {% endif %}
+
+                    {% if vehicle.tax_valid %}
+                        <p class="text-success">✔ Tax</p>
+                    {% else %}
+                        <p class="text-danger">✖ Tax</p>
+                    {% endif %}
+
+                    <hr>
+
+                    <p>
+
+                        🔴 Critical Repairs:
+                        {{ vehicle.critical_repairs }}
+
+                    </p>
+
+                    <p>
+
+                        🟠 Major Repairs:
+                        {{ vehicle.major_repairs }}
+
+                    </p>
+
+                    <p>
+
+                        🟡 Minor Repairs:
+                        {{ vehicle.minor_repairs }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

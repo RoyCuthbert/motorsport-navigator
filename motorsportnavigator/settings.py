@@ -50,6 +50,7 @@ LOCAL_APPS = [
     'core',
     'garage',
     'codrivers',
+    'preparation',
 ]
 
 INSTALLED_APPS = [

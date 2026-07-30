@@ -39,6 +39,8 @@ urlpatterns = [
 
     path("dashboard/", include("dashboard.urls")),
 
+    path("preparation/", include("preparation.urls")),
+
     path('admin/', admin.site.urls),
 ]
 
