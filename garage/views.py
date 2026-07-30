@@ -10,36 +10,40 @@ from .models import Vehicle, Repair
 @login_required
 def garage(request):
 
-    vehicles = Vehicle.objects.filter(owner=request.user)
-
-    repairs = Repair.objects.filter(
-        vehicle__owner=request.user
+    vehicles = Vehicle.objects.filter(
+        owner=request.user
     )
 
-    context = {
-        "vehicles": vehicles,
-        "critical_repairs": repairs.filter(
-            priority="Critical",
-            status="Outstanding",
-        ).count(),
+    default_vehicle = vehicles.filter(
+        is_default=True
+    ).count()
 
-        "major_repairs": repairs.filter(
-            priority="Major",
-            status="Outstanding",
-        ).count(),
+    outstanding_repairs = Repair.objects.filter(
+        vehicle__owner=request.user,
+        status="Outstanding"
+    ).count()
 
-        "minor_repairs": repairs.filter(
-            priority="Minor",
-            status="Outstanding",
-        ).count(),
-    }
+    if vehicles.exists():
+
+        readiness = sum(
+            vehicle.readiness_score
+            for vehicle in vehicles
+        ) / vehicles.count()
+
+    else:
+
+        readiness = 100
 
     return render(
         request,
         "garage/garage.html",
-        context,
+        {
+            "vehicles": vehicles,
+            "default_vehicle": default_vehicle,
+            "outstanding_repairs": outstanding_repairs,
+            "readiness": round(readiness),
+        }
     )
-
 
 @login_required
 def add_vehicle(request):
@@ -173,7 +177,33 @@ def repairs(request):
 
 @login_required
 def add_repair(request):
-    return HttpResponse("Add Repair page coming soon")
+
+    if request.method == "POST":
+
+        form = RepairForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Repair added successfully."
+            )
+
+            return redirect("garage:repairs")
+
+    else:
+
+        form = RepairForm()
+
+    return render(
+        request,
+        "garage/add_repair.html",
+        {
+            "form": form
+        }
+    )
 
 
 @login_required

@@ -1,6 +1,7 @@
 from datetime import date
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 
 # Create your models here.
 
@@ -135,7 +136,7 @@ class Vehicle(models.Model):
     @property
     def minor_repairs(self):
         return self.repairs.filter(
-            severity="Minor",
+            priority="Minor",
             status="Outstanding"
         ).count()
     
@@ -143,7 +144,7 @@ class Vehicle(models.Model):
     @property
     def major_repairs(self):
         return self.repairs.filter(
-            severity="Major",
+            priority="Major",
             status="Outstanding"
         ).count()
     
@@ -151,9 +152,26 @@ class Vehicle(models.Model):
     @property
     def critical_repairs(self):
         return self.repairs.filter(
-            severity="Critical",
+            priority="Critical",
             status="Outstanding"
         ).count()
+
+    property
+    def outstanding_repairs(self):
+        return self.repairs.filter(
+            status="Outstanding"
+        ).count()
+
+    @property
+    def repair_cost(self):
+
+        total = self.repairs.filter(
+            status="Outstanding"
+        ).aggregate(
+            Sum("estimated_cost")
+        )["estimated_cost__sum"]
+
+        return total or 0
     
     @property
     def readiness_score(self):
@@ -174,6 +192,10 @@ class Vehicle(models.Model):
             score -= 15
     
         return max(score, 0)
+
+    @property
+    def competition_ready(self):
+        return self.readiness_score >= 80
 
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"
@@ -229,7 +251,8 @@ class Repair(models.Model):
         blank=True,
     )
 
-    
+    class Meta:
+        ordering = ["status", "-reported_on"]
 
     def __str__(self):
         return self.title

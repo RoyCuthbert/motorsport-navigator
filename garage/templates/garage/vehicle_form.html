@@ -1,4 +1,4 @@
-<!-- {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% load crispy_forms_tags %}
 
@@ -6,36 +6,65 @@
 
 <div class="container py-5">
 
-<div class="row justify-content-center">
+    <div class="row justify-content-center">
 
-<div class="col-lg-8">
+        <div class="col-lg-8">
 
-<div class="card shadow-lg">
+            <div class="card shadow-lg">
 
-<div class="card-header bg-danger text-white">
+                <div class="card-header bg-danger text-white">
 
-<h2>{{ title }}</h2>
+                    <h2 class="mb-0">
+                        {{ title }}
+                    </h2>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        {{ form|crispy }}
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a href="{% url 'garage:garage' %}"
+                               class="btn btn-secondary">
+
+                                <i class="bi bi-arrow-left"></i>
+                                Cancel
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-danger">
+
+                                {% if form.instance.pk %}
+                                    <i class="bi bi-check-circle"></i>
+                                    Save Changes
+                                {% else %}
+                                    <i class="bi bi-plus-circle"></i>
+                                    Add Vehicle
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<div class="card-body">
-
-<form method="POST" enctype="multipart/form-data">
-
-{% csrf_token %}
-
-{{ form|crispy }}
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% endblock %} -->
+{% endblock %}

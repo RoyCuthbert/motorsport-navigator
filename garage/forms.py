@@ -27,3 +27,17 @@ class VehicleForm(forms.ModelForm):
                 css_class="btn btn-danger w-100"
             )
         )
+
+from django import forms
+from .models import Repair
+
+
+class RepairForm(forms.ModelForm):
+
+    class Meta:
+        model = Repair
+
+        exclude = (
+            "reported_on",
+            "completed_on",
+        )
