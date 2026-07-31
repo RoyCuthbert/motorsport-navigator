@@ -2,8 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
+from django.db.models import Sum
 
-from .forms import VehicleForm
+from .forms import VehicleForm, RepairForm
 from .models import Vehicle, Repair
 
 # Create your views here.
@@ -11,8 +12,12 @@ from .models import Vehicle, Repair
 def garage(request):
 
     vehicles = Vehicle.objects.filter(
-        owner=request.user
-    )
+    owner=request.user
+).order_by(
+    "-is_default",
+    "make",
+    "model",
+)
 
     default_vehicle = vehicles.filter(
         is_default=True
@@ -76,6 +81,27 @@ def add_vehicle(request):
         },
     )
 
+@login_required
+def vehicle_detail(request, vehicle_id):
+
+    vehicle = get_object_or_404(
+        Vehicle,
+        pk=vehicle_id,
+        owner=request.user,
+    )
+
+    repairs = vehicle.repairs.all()
+
+    context = {
+        "vehicle": vehicle,
+        "repairs": repairs,
+    }
+
+    return render(
+        request,
+        "garage/vehicle_detail.html",
+        context,
+    )
 
 @login_required
 def edit_vehicle(request, vehicle_id):

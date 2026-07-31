@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -9,44 +10,39 @@
 
         <div class="col-lg-8">
 
-            <div class="card shadow border-0">
+            <div class="card shadow">
 
                 <div class="card-header bg-danger text-white">
 
-                    <h2 class="mb-0">
-                        <i class="bi bi-car-front-fill"></i>
-                        Add Competition Vehicle
-                    </h2>
+                    <h2>Add Repair</h2>
 
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card-body">
 
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="POST">
 
                         {% csrf_token %}
 
                         {{ form|crispy }}
 
-                        <div class="d-flex justify-content-between mt-4">
+                        <hr>
 
-                            <a href="{% url 'garage:garage' %}"
-                               class="btn btn-outline-secondary btn-lg">
+                        <button type="submit"
+                                class="btn btn-danger">
 
-                                Cancel
+                            <i class="bi bi-check-circle"></i>
 
-                            </a>
+                            Save Repair
 
-                            <button type="submit"
-                                    class="btn btn-danger btn-lg">
+                        </button>
 
-                                <i class="bi bi-check-circle"></i>
+                        <a href="{% url 'garage:repairs' %}"
+                           class="btn btn-secondary">
 
-                                Save Vehicle
+                            Cancel
 
-                            </button>
-
-                        </div>
+                        </a>
 
                     </form>
 

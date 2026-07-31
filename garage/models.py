@@ -112,25 +112,57 @@ class Vehicle(models.Model):
     )
 
     class Meta:
-        ordering = ["make", "model"]
+        ordering = ["-is_default","make", "model"]
+
+    @property
+    def insurance_days_remaining(self):
+
+        if not self.insurance_expiry:
+            return None
+
+        return (self.insurance_expiry - date.today()).days
+    
+    
+    @property
+    def mot_days_remaining(self):
+
+        if not self.mot_expiry:
+            return None
+
+        return (self.mot_expiry - date.today()).days
+    
+    @property
+    def tax_days_remaining(self):
+
+        if not self.tax_expiry:
+            return None
+
+        return (self.tax_expiry - date.today()).days
+
+    @property
+    def mot_valid(self):
+
+        if self.mot_expiry:
+            return self.mot_expiry >= date.today()
+
+        return False
+
 
     @property
     def insurance_valid(self):
+
         if self.insurance_expiry:
             return self.insurance_expiry >= date.today()
+
         return False
-    
-    
-    @property
-    def mot_valid(self):
-        if self.mot_expiry:
-            return self.mot_expiry >= date.today()
-        return False
-    
+
+
     @property
     def tax_valid(self):
+
         if self.tax_expiry:
             return self.tax_expiry >= date.today()
+
         return False
 
     @property
@@ -156,7 +188,7 @@ class Vehicle(models.Model):
             status="Outstanding"
         ).count()
 
-    property
+    @property
     def outstanding_repairs(self):
         return self.repairs.filter(
             status="Outstanding"
