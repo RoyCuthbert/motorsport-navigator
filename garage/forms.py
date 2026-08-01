@@ -2,7 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Vehicle
+from .models import Vehicle, Repair
 
 
 class VehicleForm(forms.ModelForm):
@@ -28,16 +28,15 @@ class VehicleForm(forms.ModelForm):
             )
         )
 
-from django import forms
-from .models import Repair
-
-
 class RepairForm(forms.ModelForm):
 
     class Meta:
         model = Repair
-
-        exclude = (
-            "reported_on",
-            "completed_on",
-        )
+        fields = [
+            "vehicle",
+            "title",
+            "description",
+            "priority",
+            "status",
+            "estimated_cost",
+        ]

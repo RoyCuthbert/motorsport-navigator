@@ -229,6 +229,33 @@ class Vehicle(models.Model):
     def competition_ready(self):
         return self.readiness_score >= 80
 
+    @property
+    def competition_status(self):
+
+        # Road vehicles must be legal to use
+        if self.vehicle_class == "Road":
+
+            if (
+                not self.mot_valid
+                or not self.insurance_valid
+                or not self.tax_valid
+            ):
+                 return "NOT READY"
+
+        # Critical repairs always make the vehicle not ready
+        if self.critical_repairs > 0:
+            return "NOT READY"
+
+        # Minor or major repairs mean attention is needed
+        if (
+            self.major_repairs > 0
+            or self.minor_repairs > 0
+            or self.readiness_score < 80
+        ):
+            return "NEEDS ATTENTION"
+
+        return "READY"
+
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"
 

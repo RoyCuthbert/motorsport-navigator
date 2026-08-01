@@ -150,6 +150,138 @@
 
     <div class="card shadow-sm border-0 mb-5">
 
+        <div class="card-header bg-success text-white">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-speedometer2"></i>
+
+                Garage Health
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+
+                    <h2 class="text-success">
+
+                        {{ readiness }}%
+
+                    </h2>
+
+                    <div class="progress mb-3" style="height:22px;">
+
+                        {% if readiness >= 80 %}
+
+                        <div class="progress-bar bg-success" style="width: {{ readiness }}%;">
+
+                            {{ readiness }}%
+
+                        </div>
+
+                        {% elif readiness >= 60 %}
+
+                        <div class="progress-bar bg-warning" style="width: {{ readiness }}%;">
+
+                            {{ readiness }}%
+
+                        </div>
+
+                        {% else %}
+
+                        <div class="progress-bar bg-danger" style="width: {{ readiness }}%;">
+
+                            {{ readiness }}%
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <p class="text-muted">
+
+                        Competition Readiness
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h2 class="text-danger">
+
+                        {{ outstanding_repairs }}
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        Outstanding Repairs
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h2 class="text-warning">
+
+                        £{{ repair_cost }}
+
+                    </h2>
+
+                    <p class="text-muted">
+
+                        Outstanding Repair Cost
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    {% if readiness >= 80 %}
+
+                    <span class="badge bg-success fs-6 p-3">
+
+                        READY TO COMPETE
+
+                    </span>
+
+                    {% elif readiness >= 60 %}
+
+                    <span class="badge bg-warning text-dark fs-6 p-3">
+
+                        NEEDS ATTENTION
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-danger fs-6 p-3">
+
+                        NOT READY
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+
         <div class="card-header bg-dark text-white">
 
             <h4 class="mb-0">
@@ -352,11 +484,11 @@
 
 </div>
 
-    <h2 class="fw-bold mb-4">
+<h2 class="fw-bold mb-4">
 
-        Your Competition Vehicles
+    Your Competition Vehicles
 
-    </h2>
+</h2>
 
 <div class="row">
 
@@ -365,6 +497,32 @@
     <div class="col-lg-4 col-md-6 mb-4">
 
         <div class="card vehicle-card shadow h-100 d-flex flex-column">
+
+            {% if vehicle.readiness_score >= 80 %}
+
+            <div class="card-header bg-success text-white text-center">
+
+                <strong>🟢 READY TO COMPETE</strong>
+
+            </div>
+
+            {% elif vehicle.readiness_score >= 60 %}
+
+            <div class="card-header bg-warning text-dark text-center">
+
+                <strong>🟡 NEEDS ATTENTION</strong>
+
+            </div>
+
+            {% else %}
+
+            <div class="card-header bg-danger text-white text-center">
+
+                <strong>🔴 NOT READY</strong>
+
+            </div>
+
+            {% endif %}
 
             {% if vehicle.is_default %}
             <span class="badge bg-success mb-2">
@@ -627,70 +785,70 @@
             </div>
             <div class="alert alert-light mt-4 mb-0">
 
-                    <strong>Outstanding Repair Cost</strong>
+                <strong>Outstanding Repair Cost</strong>
 
-                    <div class="fs-4">
+                <div class="fs-4">
 
-                        £{{ vehicle.repair_cost }}
+                    £{{ vehicle.repair_cost }}
 
-                    </div>
+                </div>
 
             </div>
 
-        <div class="card-footer d-grid gap-2 mt-auto">
+            <div class="card-footer d-grid gap-2 mt-auto">
 
-            <a href="{% url 'garage:edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
+                <a href="{% url 'garage:edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
 
-                ✏ Edit Vehicle
+                    ✏ Edit Vehicle
 
-            </a>
+                </a>
 
-            <a href="{% url 'garage:delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
+                <a href="{% url 'garage:delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
 
-                🗑 Delete Vehicle
+                    🗑 Delete Vehicle
 
-            </a>
-            <div class="text-center small text-muted mt-3">
+                </a>
+                <div class="text-center small text-muted mt-3">
 
-                Added
+                    Added
 
-                {{ vehicle.created_on|date:"d M Y" }}
+                    {{ vehicle.created_on|date:"d M Y" }}
 
+                </div>
             </div>
         </div>
-    </div>
-
-</div>
-
-{% empty %}
-
-<div class="col-12">
-
-    <div class="card shadow-sm border-0 text-center p-5">
-
-        <i class="bi bi-car-front display-1 text-danger mb-3"></i>
-
-        <h3>No Vehicles Added</h3>
-
-        <p class="text-muted">
-
-            Start building your digital garage by adding your first competition vehicle.
-
-        </p>
-
-        <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg mt-3">
-
-            <i class="bi bi-plus-circle"></i>
-
-            Add My First Vehicle
-
-        </a>
 
     </div>
 
-</div>
+    {% empty %}
 
-{% endfor %}
+    <div class="col-12">
+
+        <div class="card shadow-sm border-0 text-center p-5">
+
+            <i class="bi bi-car-front display-1 text-danger mb-3"></i>
+
+            <h3>No Vehicles Added</h3>
+
+            <p class="text-muted">
+
+                Start building your digital garage by adding your first competition vehicle.
+
+            </p>
+
+            <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg mt-3">
+
+                <i class="bi bi-plus-circle"></i>
+
+                Add My First Vehicle
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
 
 </div>
 

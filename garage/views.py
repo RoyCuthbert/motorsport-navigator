@@ -28,6 +28,20 @@ def garage(request):
         status="Outstanding"
     ).count()
 
+    repair_cost = (
+    Repair.objects.filter(
+        vehicle__owner=request.user,
+        status="Outstanding",
+    ).aggregate(
+        total=Sum("estimated_cost")
+    )["total"] or 0
+    )
+
+    completed_repairs = Repair.objects.filter(
+    vehicle__owner=request.user,
+    status="Completed",
+    ).count()
+
     if vehicles.exists():
 
         readiness = sum(
@@ -47,6 +61,8 @@ def garage(request):
             "default_vehicle": default_vehicle,
             "outstanding_repairs": outstanding_repairs,
             "readiness": round(readiness),
+            "repair_cost":repair_cost,
+            "completed_repairs": completed_repairs,
         }
     )
 
@@ -188,11 +204,22 @@ def repairs(request):
         or 0
     )
 
+    vehicles_affected = (
+        repairs.values("vehicle").distinct().count()
+    )
+
+    critical_repairs = repairs.filter(
+    priority="Critical",
+    status="Outstanding"
+    ).count()
+
     context = {
         "repairs": repairs,
         "outstanding_count": outstanding_count,
         "completed_count": completed_count,
         "total_cost": total_cost,
+        "vehicles_affected": vehicles_affected,
+        "critical_repairs": critical_repairs,
     }
 
     return render(

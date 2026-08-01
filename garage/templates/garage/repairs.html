@@ -16,255 +16,254 @@
                 Track every repair on every competition vehicle.
             </p>
         </div>
+        
+        <div class="d-flex gap-2">
+            <a href="{% url 'garage:add_repair' %}" class="btn btn-danger btn-lg">
+                <i class="bi bi-plus-circle"></i>
+                Add Repair
+            </a>
 
-        <a href="{% url 'garage:add_repair' %}" class="btn btn-danger btn-lg">
-            <i class="bi bi-plus-circle"></i>
-            Add Repair
-        </a>
-
+            <a href="{% url 'garage:garage' %}" class="btn btn-danger btn-lg">
+                <i class="bi bi-plus-circle"></i>
+                Garage
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow">
+    <div class="row mb-4">
 
-        <div class="card-header bg-dark text-white">
+        <div class="col-md-3 mb-3">
 
-            Current Repairs
+            <div class="card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <i class="bi bi-tools display-5 text-danger"></i>
+
+                    <h2>{{ outstanding_count }}</h2>
+
+                    <p class="text-muted mb-0">
+                        Outstanding Repairs
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="row mb-4">
+        <div class="col-md-3 mb-3">
 
-            <div class="col-md-3">
+            <div class="card shadow-sm text-center h-100">
 
-                <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
 
-                    <div class="card-body">
+                    <i class="bi bi-check-circle display-5 text-success"></i>
 
-                        <i class="bi bi-exclamation-triangle-fill text-danger display-5"></i>
+                    <h2>{{ completed_count }}</h2>
 
-                        <h2>{{ repairs.count }}</h2>
-
-                        <p class="text-muted mb-0">
-
-                            Total Repairs
-
-                        </p>
-
-                    </div>
+                    <p class="text-muted mb-0">
+                        Completed Repairs
+                    </p>
 
                 </div>
 
             </div>
 
-            <div class="col-md-3">
+        </div>
 
-                <div class="card shadow-sm border-0 text-center">
+        <div class="col-md-3 mb-3">
 
-                    <div class="card-body">
+            <div class="card shadow-sm text-center h-100">
 
-                        <i class="bi bi-tools text-warning display-5"></i>
+                <div class="card-body">
 
-                        <h2>{{ outstanding_count }}</h2>
+                    <i class="bi bi-cash-stack display-5 text-warning"></i>
 
-                        <p class="text-muted mb-0">
+                    <h2>£{{ total_cost }}</h2>
 
-                            Outstanding
-
-                        </p>
-
-                    </div>
+                    <p class="text-muted mb-0">
+                        Outstanding Cost
+                    </p>
 
                 </div>
 
             </div>
 
-            <div class="col-md-3">
+        </div>
 
-                <div class="card shadow-sm border-0 text-center">
+        <div class="col-md-3 mb-3">
 
-                    <div class="card-body">
+            <div class="card shadow-sm text-center h-100">
 
-                        <i class="bi bi-check-circle-fill text-success display-5"></i>
+                <div class="card-body">
 
-                        <h2>{{ completed_count }}</h2>
+                    <i class="bi bi-exclamation-triangle display-5 text-danger"></i>
 
-                        <p class="text-muted mb-0">
+                    <h2>{{ critical_repairs }}</h2>
 
+                    <p class="text-muted mb-0">
+                        Critical Repairs
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-0">
+
+            <thead>
+
+                <tr>
+
+                    <th>Vehicle</th>
+
+                    <th>Repair</th>
+
+                    <th>Priority</th>
+
+                    <th>Status</th>
+
+                    <th>Estimated Cost</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for repair in repairs %}
+
+                <tr>
+
+                    <td>
+                        <span class="badge bg-dark">
+                            {{ repair.vehicle }}
+                        </span> 
+                    </td>
+
+                    <td>{{ repair.title }}</td>
+
+                    <td>
+
+                        {% if repair.priority == "Critical" %}
+                        <span class="badge bg-danger">
+                            Critical
+                        </span>
+
+                        {% elif repair.priority == "Major" %}
+                        <span class="badge bg-warning text-dark">
+                            Major
+                        </span>
+
+                        {% elif repair.priority == "Minor" %}
+                        <span class="badge bg-info">
+                            Minor
+                        </span>
+
+                        {% else %}
+                        <span class="badge bg-secondary">
+                            Advisory
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if repair.status == "Completed" %}
+
+                        <span class="badge bg-success">
                             Completed
+                        </span>
+
+                        {% elif repair.status == "In Progress" %}
+
+                        <span class="badge bg-primary">
+                            In Progress
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-danger">
+                            Outstanding
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td class="fw-bold text-success">£{{ repair.estimated_cost }}</td>
+
+                    <td class="test-nowrap">
+
+                        <a href="{% url 'garage:edit_repair' repair.id %}" class="btn btn-sm btn-outline-primary">
+
+                            <i class="bi bi-pencil"></i>
+
+                            Edit
+
+                        </a>
+
+                        <a href="{% url 'garage:delete_repair' repair.id %}" class="btn btn-sm btn-outline-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="5" class="text-center p-5">
+
+                        <i class="bi bi-check-circle-fill display-2 text-success"></i>
+
+                        <h3 class="mt-3">
+
+                            No  Outstanding Repairs
+
+                        </h3>
+
+                        <p class="text-muted">
+
+                            Every competition vehicle is currently ready for the next event.
 
                         </p>
 
-                    </div>
+                        <a href="{% url 'garage:add_repair' %}"
+                            class="btn btn-danger">
+                            Add Repair
+                        </a>
 
-                </div>
+                    </td>
 
-            </div>
+                </tr>
 
-            <div class="col-md-3">
+                {% endfor %}
 
-                <div class="card shadow-sm border-0 text-center">
+            </tbody>
 
-                    <div class="card-body">
-
-                        <i class="bi bi-cash-stack text-primary display-5"></i>
-
-                        <h2>£{{ total_cost }}</h2>
-
-                        <p class="text-muted mb-0">
-
-                            Estimated Cost
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="table-responsive">
-
-            <table class="table table-hover mb-0">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Vehicle</th>
-
-                        <th>Repair</th>
-
-                        <th>Priority</th>
-
-                        <th>Status</th>
-
-                        <th>Estimated Cost</th>
-
-                        <th>Actions</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for repair in repairs %}
-
-                    <tr>
-
-                        <td>{{ repair.vehicle }}</td>
-
-                        <td>{{ repair.title }}</td>
-
-                        <td>
-
-                            {% if repair.priority == "Critical" %}
-                            <span class="badge bg-danger">
-                                Critical
-                            </span>
-
-                            {% elif repair.priority == "Major" %}
-                            <span class="badge bg-warning text-dark">
-                                Major
-                            </span>
-
-                            {% elif repair.priority == "Minor" %}
-                            <span class="badge bg-info">
-                                Minor
-                            </span>
-
-                            {% else %}
-                            <span class="badge bg-secondary">
-                                Advisory
-                            </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            {% if repair.status == "Completed" %}
-
-                            <span class="badge bg-success">
-                                Completed
-                            </span>
-
-                            {% elif repair.status == "In Progress" %}
-
-                            <span class="badge bg-primary">
-                                In Progress
-                            </span>
-
-                            {% else %}
-
-                            <span class="badge bg-danger">
-                                Outstanding
-                            </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>£{{ repair.estimated_cost }}</td>
-
-                        <td>
-
-                            <a href="{% url 'garage:edit_repair' repair.id %}" class="btn btn-sm btn-outline-primary">
-
-                                <i class="bi bi-pencil"></i>
-
-                                Edit
-
-                            </a>
-
-                            <a href="{% url 'garage:delete_repair' repair.id %}" class="btn btn-sm btn-outline-danger">
-
-                                <i class="bi bi-trash"></i>
-
-                                Delete
-
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-
-                        <td colspan="5" class="text-center p-5">
-
-                            <i class="bi bi-check-circle display-3 text-success"></i>
-
-                            <h4 class="mt-3">
-
-                                No Repairs Outstanding
-
-                            </h4>
-
-                            <p class="text-muted">
-
-                                Your vehicles are competition ready.
-
-                            </p>
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
+        </table>
 
     </div>
+
+</div>
 
 </div>
 
