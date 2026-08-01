@@ -12,5 +12,6 @@ urlpatterns = [
     path("<int:vehicle_id>/delete/", views.delete_vehicle, name="delete_vehicle"),
     path("repairs/", views.repairs, name="repairs"),
     path("repairs/add/", views.add_repair, name="add_repair"),
-    path("repairs/<int:pk>/edit/", views.edit_repair, name="edit_repair"),
+    path("repairs/<int:repair_id>/edit/", views.edit_repair, name="edit_repair"),
+    path("repairs/<int:repair_id>/delete/", views.delete_repair, name="delete_repair"),
 ]

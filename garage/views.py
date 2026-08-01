@@ -233,5 +233,69 @@ def add_repair(request):
 
 
 @login_required
-def edit_repair(request, pk):
-    return HttpResponse(f"Edit Repair {pk} coming soon")
+def edit_repair(request, repair_id):
+
+    repair = get_object_or_404(
+        Repair,
+        pk=repair_id,
+        vehicle__owner=request.user,
+    )
+
+    if request.method == "POST":
+
+        form = RepairForm(
+            request.POST,
+            instance=repair,
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Repair updated successfully."
+            )
+
+            return redirect("garage:repairs")
+
+    else:
+
+        form = RepairForm(instance=repair)
+
+    return render(
+        request,
+        "garage/edit_repair.html",
+        {
+            "form": form,
+            "repair": repair,
+        },
+    )
+
+@login_required
+def delete_repair(request, repair_id):
+
+    repair = get_object_or_404(
+        Repair,
+        pk=repair_id,
+        vehicle__owner=request.user,
+    )
+
+    if request.method == "POST":
+
+        repair.delete()
+
+        messages.success(
+            request,
+            "Repair deleted successfully."
+        )
+
+        return redirect("garage:repairs")
+
+    return render(
+        request,
+        "garage/delete_repair.html",
+        {
+            "repair": repair,
+        },
+    )

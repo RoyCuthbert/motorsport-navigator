@@ -142,6 +142,8 @@
 
                         <th>Estimated Cost</th>
 
+                        <th>Actions</th>
+
                     </tr>
 
                 </thead>
@@ -207,6 +209,26 @@
                         </td>
 
                         <td>£{{ repair.estimated_cost }}</td>
+
+                        <td>
+
+                            <a href="{% url 'garage:edit_repair' repair.id %}" class="btn btn-sm btn-outline-primary">
+
+                                <i class="bi bi-pencil"></i>
+
+                                Edit
+
+                            </a>
+
+                            <a href="{% url 'garage:delete_repair' repair.id %}" class="btn btn-sm btn-outline-danger">
+
+                                <i class="bi bi-trash"></i>
+
+                                Delete
+
+                            </a>
+
+                        </td>
 
                     </tr>
 
