@@ -36,49 +36,55 @@
     </div>
     <div class="row mb-4">
 
-        <div class="col-md-3 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
 
-            <div class="card summary-card shadow-sm text-center h-100">
+            <a href="#vehicles" class="text-decoration-none text-dark">
 
-                <div class="card-body">
+                <div class="card summary-card shadow-sm text-center h-100">
 
-                    <i class="bi bi-car-front-fill display-4 text-danger"></i>
+                    <div class="card-body">
 
-                    <h2 class="mt-3">
+                        <i class="bi bi-car-front-fill display-4 text-danger"></i>
 
-                        {{ vehicles.count }}
+                        <h2 class="mt-3">
 
-                    </h2>
+                            {{ vehicles.count }}
 
-                    <p class="text-muted mb-0">
+                        </h2>
 
-                        Registered Vehicles
+                        <p class="text-muted mb-0">
 
-                    </p>
+                            Competition Vehicles
 
-                    <small class="text-secondary">
+                        </p>
 
-                        Ready for Competition
+                        <small class="text-secondary">
 
-                    </small>
+                            Registered
+
+                        </small>
+
+                    </div>
 
                 </div>
-
-            </div>
-
+            </a>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
 
             <div class="card summary-card shadow-sm text-center h-100">
 
-                <div class="card-body">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
 
                     <i class="bi bi-star-fill display-4 text-warning"></i>
 
                     <h2>
 
-                        {{ default_vehicle }}
+                        {% if default_vehicle %}
+                        {{ default_vehicle.nickname }}
+                        {% else %}
+                        None
+                        {% endif %}
 
                     </h2>
 
@@ -94,17 +100,17 @@
 
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
 
             <div class="card summary-card shadow-sm text-center h-100">
 
-                <div class="card-body">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
 
                     <i class="bi bi-calendar-check display-4 text-success"></i>
 
                     <h2>
 
-                        {{ outstanding_repairs }}
+                        {{ mot_due }}
 
                     </h2>
 
@@ -120,35 +126,36 @@
 
         </div>
 
-        <div class="col-md-3 mb-3">
 
-            <div class="card summary-card shadow-sm text-center h-100">
 
-                <div class="card-body">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <a href="#garage-health" class="text-decoration-none text-dark">
+                <div class="card summary-card shadow-sm text-center h-100">
 
-                    <i class="bi bi-speedometer2 display-4 text-primary"></i>
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
 
-                    <h2>
+                        <i class="bi bi-speedometer2 display-4 text-primary"></i>
 
-                        {{ readiness }}
+                        <h2>
 
-                    </h2>
+                            {{ readiness }}%
 
-                    <p class="text-muted">
+                        </h2>
 
-                        Garage Ready
+                        <p class="text-muted">
 
-                    </p>
+                            Average Readiness
+
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </div>
-
         </div>
-
+        </a>
     </div>
-
-    <div class="card shadow-sm border-0 mb-5">
+    <div class="card shadow-sm border-0 mb-5" id="garage-health">
 
         <div class="card-header bg-success text-white">
 
@@ -162,7 +169,7 @@
 
         </div>
 
-        <div class="card-body">
+        <div class="card-body text-center d-flex flex-column justify-content-center">
 
             <div class="row text-center">
 
@@ -244,6 +251,22 @@
 
                 </div>
 
+                <div class="col text-center">
+
+                    <h2 class="text-success">
+
+                        {{ ready_count }}/{{ vehicles.count }}
+
+                    </h2>
+
+                    <p class="mb-0">
+
+                        Vehicles Ready
+
+                    </p>
+
+                </div>
+
                 <div class="col-md-3">
 
                     {% if readiness >= 80 %}
@@ -277,210 +300,212 @@
             </div>
 
         </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-5">
+
+    <div class="card-header bg-danger text-white">
+
+        <h4 class="mb-0">
+
+            <i class="bi bi-lightning-charge-fill"></i>
+
+            Quick Actions
+
+        </h4>
 
     </div>
 
-    <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body text-center d-flex flex-column justify-content-center">
 
-        <div class="card-header bg-dark text-white">
+        <div class="row text-center">
 
-            <h4 class="mb-0">
-                <i class="bi bi-clipboard-check"></i>
-                Garage Setup Progress
-            </h4>
+            <div class="d-flex gap-2">
+
+                <a href="{% url 'preparation:preparation' %}" class="btn btn-outline-success btn-lg">
+
+                    <i class="bi bi-flag-fill"></i>
+                    Event Preparation
+
+                </a>
+
+                <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Add Vehicle
+
+                </a>
+
+            </div>
+
+            <a href="{% url 'garage:repairs' %}" class="btn btn-outline-dark btn-lg">
+
+                <i class="bi bi-tools"></i>
+
+                Repairs Centre
+
+            </a>
+
 
         </div>
 
-        <div class="card-body">
+        <div class="col-md-3 mb-3">
 
-            <div class="row">
+            <a href="#" class="btn btn-outline-dark w-100">
 
-                <div class="col-md-4 mb-3">
+                <i class="bi bi-people-fill"></i><br>
 
-                    <div class="d-flex justify-content-between">
+                Co-Drivers
 
-                        <span>Driver Profile</span>
+            </a>
 
-                        <span class="badge bg-success">
-                            Complete
-                        </span>
+        </div>
 
-                    </div>
+        <div class="col-md-3 mb-3">
 
-                </div>
+            <a href="#" class="btn btn-outline-dark w-100">
 
-                <div class="col-md-4 mb-3">
+                <i class="bi bi-flag-fill"></i><br>
 
-                    <div class="d-flex justify-content-between">
+                Find Events
 
-                        <span>Competition Vehicle</span>
+            </a>
 
-                        {% if vehicles.count > 0 %}
-                        <span class="badge bg-success">Complete</span>
-                        {% else %}
-                        <span class="badge bg-danger">Required</span>
-                        {% endif %}
+        </div>
 
-                    </div>
+        <div class="col-md-3 mb-3">
 
-                </div>
+            <a href="#" class="btn btn-outline-dark w-100">
 
-                <div class="col-md-4 mb-3">
+                <i class="bi bi-star-fill"></i><br>
 
-                    <div class="d-flex justify-content-between">
+                Favourite Clubs
 
-                        <span>Co-Drivers</span>
-
-                        <span class="badge bg-warning text-dark">
-
-                            Coming Soon
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-4 mb-3">
-
-                    <div class="d-flex justify-content-between">
-
-                        <span>Membership</span>
-
-                        <span class="badge bg-warning text-dark">
-
-                            Coming Soon
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-4 mb-3">
-
-                    <div class="d-flex justify-content-between">
-
-                        <span>Competition Licence</span>
-
-                        <span class="badge bg-warning text-dark">
-
-                            Coming Soon
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-4 mb-3">
-
-                    <div class="d-flex justify-content-between">
-
-                        <span>Favourite Clubs</span>
-
-                        <span class="badge bg-warning text-dark">
-
-                            Coming Soon
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
+            </a>
 
         </div>
 
     </div>
 
-    <div class="card shadow-sm border-0 mb-5">
+</div>
 
-        <div class="card-header bg-danger text-white">
+<div class="card shadow-sm border-0 mb-5">
 
-            <h4 class="mb-0">
+    <div class="card-header bg-dark text-white">
 
-                <i class="bi bi-lightning-charge-fill"></i>
+        <h4 class="mb-0">
+            <i class="bi bi-clipboard-check"></i>
+            Garage Setup Progress
+        </h4>
 
-                Quick Actions
+    </div>
 
-            </h4>
+    <div class="card-body text-center d-flex flex-column justify-content-center">
 
-        </div>
+        <div class="row">
 
-        <div class="card-body">
+            <div class="col-md-4 mb-3">
 
-            <div class="row text-center">
+                <div class="d-flex justify-content-between">
 
-                <div class="d-flex gap-2">
+                    <span>👤 Driver Profile</span>
 
-                    <a href="{% url 'preparation:preparation' %}" class="btn btn-outline-success btn-lg">
-
-                        <i class="bi bi-flag-fill"></i>
-                        Event Preparation
-
-                    </a>
-
-                    <a href="{% url 'garage:add_vehicle' %}" class="btn btn-danger btn-lg">
-
-                        <i class="bi bi-plus-circle"></i>
-                        Add Vehicle
-
-                    </a>
+                    <span class="badge bg-success">
+                        Complete
+                    </span>
 
                 </div>
 
-                <a href="{% url 'garage:repairs' %}" class="btn btn-outline-dark btn-lg">
+            </div>
 
-                    <i class="bi bi-tools"></i>
+            <div class="col-md-4 mb-3">
 
-                    Repairs Centre
+                <div class="d-flex justify-content-between">
 
-                </a>
+                    <span>🏎 Competition Vehicle</span>
 
+                    {% if vehicles.count > 0 %}
+                    <span class="badge bg-success">Complete</span>
+                    {% else %}
+                    <span class="badge bg-danger">Required</span>
+                    {% endif %}
+
+                </div>
 
             </div>
 
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
 
-                <a href="#" class="btn btn-outline-dark w-100">
+                <div class="d-flex justify-content-between">
 
-                    <i class="bi bi-people-fill"></i><br>
+                    <span>👥 Co-Drivers</span>
 
-                    Co-Drivers
+                    <span class="badge bg-warning text-dark">
 
-                </a>
+                        Coming Soon
 
-            </div>
+                    </span>
 
-            <div class="col-md-3 mb-3">
-
-                <a href="#" class="btn btn-outline-dark w-100">
-
-                    <i class="bi bi-flag-fill"></i><br>
-
-                    Find Events
-
-                </a>
+                </div>
 
             </div>
 
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
 
-                <a href="#" class="btn btn-outline-dark w-100">
+                <div class="d-flex justify-content-between">
 
-                    <i class="bi bi-star-fill"></i><br>
+                    <span>💳 Membership</span>
 
-                    Favourite Clubs
+                    <span class="badge bg-warning text-dark">
 
-                </a>
+                        Coming Soon
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <div class="d-flex justify-content-between">
+
+                    <span>🪪 Competition Licence</span>
+
+                    <span class="badge bg-warning text-dark">
+
+                        Coming Soon
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <div class="d-flex justify-content-between">
+
+                    <span>🏁 Favourite Clubs</span>
+
+                    <span class="badge bg-warning text-dark">
+
+                        Coming Soon
+
+                    </span>
+
+                </div>
 
             </div>
 
         </div>
 
     </div>
+
+</div>
+
+
 
 </div>
 
@@ -505,7 +530,7 @@
 
         </div>
 
-        <div class="card-body">
+        <div class="card-body text-center d-flex flex-column justify-content-center">
 
             <div class="row text-center">
 
@@ -546,313 +571,319 @@
         </div>
 
     </div>
-    {% for vehicle in vehicles %}
 
-    <div class="col-lg-4 col-md-6 mb-4">
+    
+        {% for vehicle in vehicles %}
 
-        <div class="card vehicle-card shadow h-100 d-flex flex-column">
+        <div class="col-lg-4 col-md-6 mb-4">
 
-            {% if vehicle.competition_status == "READY TO COMPETE" %}
+            <div class="card vehicle-card shadow h-100 d-flex flex-column" id="vehicles">
 
-            <div class="card-header bg-success text-white text-center">
+                {% if vehicle.competition_status == "READY TO COMPETE" %}
 
-                <strong>
-                    🟢 READY TO COMPETE
-                </strong>
+                <div class="card-header bg-success text-white text-center">
 
-            </div>
+                    <strong>
+                        🟢 READY TO COMPETE
+                    </strong>
 
-            {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
+                </div>
 
-            <div class="card-header bg-warning text-dark text-center">
+                {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
 
-                <strong>
-                    🟡 NEEDS ATTENTION
-                </strong>
+                <div class="card-header bg-warning text-dark text-center">
 
-            </div>
+                    <strong>
+                        🟡 NEEDS ATTENTION
+                    </strong>
 
-            {% else %}
+                </div>
 
-            <div class="card-header bg-danger text-white text-center">
+                {% else %}
 
-                <strong>
-                    🔴 NOT READY
-                </strong>
+                <div class="card-header bg-danger text-white text-center">
 
-            </div>
+                    <strong>
+                        🔴 NOT READY
+                    </strong>
 
-            {% endif %}
+                </div>
 
-
-
-            {% if vehicle.is_default %}
-            <span class="badge bg-success mb-2">
-                ⭐ Default Competition Vehicle
-            </span>
-            {% endif %}
-
-            <div class="card-header bg-danger text-white">
-
-                <h5 class="mb-0">
-
-                    {{ vehicle.nickname }}
-
-                </h5>
-
-                <h5 class="mb-0">
-
-                    {{ vehicle.make }} {{ vehicle.model }}
+                {% endif %}
 
 
-                </h5>
 
-            </div>
+                {% if vehicle.is_default %}
+                <span class="badge bg-warning text-dark mb-2">
 
-            {% if vehicle.vehicle_image %}
-            <img src="{{ vehicle.vehicle_image.url }}" class="card-img-top vehicle-img"
-                alt="{{ vehicle.make }} {{ vehicle.model }}">
-            {% else %}
-            <img src="{% static 'images/default-car.jpg' %}" class="card-img-top vehicle-img"
-                alt="Default vehicle image">
-            {% endif %}
+                    <i class="bi bi-star-fill"></i>
 
-            <div class="card-body d-flex flex-column">
+                    Default Vehicle
 
-                <div class="mb-3">
+                </span>
+                {% endif %}
 
-                    <div class="table-responsive">
+                <div class="card-header bg-danger text-white">
 
-                        <table class="table table-sm align-middle">
+                    <h5 class="mb-0">
 
-                            <tbody>
+                        {{ vehicle.nickname }}
 
-                                <tr>
-                                    <th>Registration</th>
-                                    <td>{{ vehicle.registration }}</td>
-                                </tr>
+                    </h5>
 
-                                <tr>
-                                    <th>Nickname</th>
-                                    <td>{{ vehicle.nickname }}</td>
-                                </tr>
+                    <h5 class="mb-0">
 
-                                <tr>
-                                    <th>Colour</th>
-                                    <td>{{ vehicle.colour }}</td>
-                                </tr>
+                        {{ vehicle.make }} {{ vehicle.model }}
 
-                                <tr>
-                                    <th>Year</th>
-                                    <td>{{ vehicle.year }}</td>
-                                </tr>
 
-                                <tr>
-                                    <th>Engine</th>
-                                    <td>{{ vehicle.engine_size }} cc</td>
-                                </tr>
+                    </h5>
 
-                                <tr>
-                                    <th>Drive</th>
-                                    <td>{{ vehicle.get_drive_type_display }}</td>
-                                </tr>
+                </div>
 
-                                <tr>
-                                    <th>Transmission</th>
-                                    <td>{{ vehicle.get_transmission_display }}</td>
-                                </tr>
+                {% if vehicle.vehicle_image %}
+                <img src="{{ vehicle.vehicle_image.url }}" class="card-img-top vehicle-img"
+                    alt="{{ vehicle.make }} {{ vehicle.model }}">
+                {% else %}
+                <img src="{% static 'images/default-car.jpg' %}" class="card-img-top vehicle-img"
+                    alt="Default vehicle image">
+                {% endif %}
 
-                                <tr>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
 
-                                    <th>Fuel</th>
+                    <div class="mb-3">
 
-                                    <td>{{ vehicle.get_fuel_type_display }}</td>
+                        <div class="table-responsive">
 
-                                </tr>
+                            <table class="table table-sm align-middle">
 
-                                <tr>
+                                <tbody>
 
-                                    <th>Class</th>
+                                    <tr>
+                                        <th>Registration</th>
+                                        <td>{{ vehicle.registration }}</td>
+                                    </tr>
 
-                                    <td>{{ vehicle.get_vehicle_class_display }}</td>
+                                    <tr>
+                                        <th>Nickname</th>
+                                        <td>{{ vehicle.nickname }}</td>
+                                    </tr>
 
-                                </tr>
+                                    <tr>
+                                        <th>Colour</th>
+                                        <td>{{ vehicle.colour }}</td>
+                                    </tr>
 
-                            </tbody>
+                                    <tr>
+                                        <th>Year</th>
+                                        <td>{{ vehicle.year }}</td>
+                                    </tr>
 
-                        </table>
+                                    <tr>
+                                        <th>Engine</th>
+                                        <td>{{ vehicle.engine_size }} cc</td>
+                                    </tr>
 
+                                    <tr>
+                                        <th>Drive</th>
+                                        <td>{{ vehicle.get_drive_type_display }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Transmission</th>
+                                        <td>{{ vehicle.get_transmission_display }}</td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Fuel</th>
+
+                                        <td>{{ vehicle.get_fuel_type_display }}</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Class</th>
+
+                                        <td>{{ vehicle.get_vehicle_class_display }}</td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="border rounded p-3 bg-light">
+
+                        <h6 class="mb-3">
+                            Vehicle Status
+                        </h6>
+
+                        <!-- MOT -->
+
+                        <p>
+                            MOT
+                            <span class="badge bg-{{ vehicle.mot_status.1 }}">
+                                {{ vehicle.mot_status.0 }}
+                            </span>
+                        </p>
+
+                        <hr>
+
+                        <!-- Insurance -->
+
+                        <p>
+                            Insurance
+                            <span class="badge bg-{{ vehicle.insurance_status.1 }}">
+                                {{ vehicle.insurance_status.0 }}
+                            </span>
+                        </p>
+
+                        <hr>
+
+                        <!-- Tax -->
+
+                        <p>
+                            Tax
+                            <span class="badge bg-{{ vehicle.tax_status.1 }}">
+                                {{ vehicle.tax_status.0 }}
+                            </span>
+                        </p>
+
+                    </div>
+
+                </div>
+                <h6 class="mt-4">
+
+                    <i class="bi bi-speedometer2"></i>
+
+                    Competition Readiness
+
+                </h6>
+
+                {% if vehicle.readiness_score >= 90 %}
+
+                <div class="progress mb-2" style="height:28px;">
+                    <div class="progress-bar bg-success" style="width: {{ vehicle.readiness_score }}%;">
+                        {{ vehicle.readiness_score }}%
                     </div>
                 </div>
 
-                <div class="border rounded p-3 bg-light">
+                {% elif vehicle.readiness_score >= 70 %}
 
-                    <h6 class="mb-3">
-                        Vehicle Status
-                    </h6>
+                <div class="progress mb-2" style="height:28px;">
+                    <div class="progress-bar bg-warning text-dark" style="width: {{ vehicle.readiness_score }}%;">
+                        {{ vehicle.readiness_score }}%
+                    </div>
+                </div>
 
-                    <!-- MOT -->
+                {% else %}
 
-                    <p>
-                        MOT
-                        <span class="badge bg-{{ vehicle.mot_status.1 }}">
-                            {{ vehicle.mot_status.0 }}
-                        </span>
-                    </p>
+                <div class="progress mb-2" style="height:28px;">
+                    <div class="progress-bar bg-danger" style="width: {{ vehicle.readiness_score }}%;">
+                        {{ vehicle.readiness_score }}%
+                    </div>
+                </div>
 
-                    <hr>
+                {% endif %}
 
-                    <!-- Insurance -->
+                {% if vehicle.competition_status == "READY TO COMPETE" %}
 
-                     <p>
-                        Insurance
-                        <span class="badge bg-{{ vehicle.insurance_status.1 }}">
-                            {{ vehicle.insurance_status.0 }}
-                        </span>
-                    </p>
+                <p class="text-success fw-bold text-center">
+                    ✔ Ready to Compete
+                </p>
 
-                    <hr>
+                {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
 
-                    <!-- Tax -->
+                <p class="text-warning fw-bold text-center">
+                    ⚠ Needs Attention
+                </p>
 
-                     <p>
-                        Tax
-                        <span class="badge bg-{{ vehicle.tax_status.1 }}">
-                            {{ vehicle.tax_status.0 }}
-                        </span>
-                    </p>
+                {% else %}
+
+                <p class="text-danger fw-bold text-center">
+                    ✖ Not Ready
+                </p>
+
+                {% endif %}
+
+                <div class="row text-center mt-4">
+
+                    <div class="col-4">
+
+                        <h5 class="text-info">
+
+                            {{ vehicle.minor_repairs }}
+
+                        </h5>
+
+                        <small>Minor</small>
+
+                    </div>
+
+                    <div class="col-4">
+
+                        <h5 class="text-warning">
+
+                            {{ vehicle.major_repairs }}
+
+                        </h5>
+
+                        <small>Major</small>
+
+                    </div>
+
+                    <div class="col-4">
+
+                        <h5 class="text-danger">
+
+                            {{ vehicle.critical_repairs }}
+
+                        </h5>
+
+                        <small>Critical</small>
+
+                    </div>
+                </div>
+                <div class="alert alert-light mt-4 mb-0">
+
+                    <strong>Outstanding Repair Cost</strong>
+
+                    <div class="fs-4">
+
+                        £{{ vehicle.repair_cost }}
+
+                    </div>
 
                 </div>
 
-            </div>
-            <h6 class="mt-4">
+                <div class="card-footer d-grid gap-2 mt-auto">
 
-                <i class="bi bi-speedometer2"></i>
+                    <a href="{% url 'garage:edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
 
-                Competition Readiness
+                        ✏ Edit Vehicle
 
-            </h6>
+                    </a>
 
-            {% if vehicle.readiness_score >= 90 %}
+                    <a href="{% url 'garage:delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
 
-            <div class="progress mb-2" style="height:28px;">
-                <div class="progress-bar bg-success" style="width: {{ vehicle.readiness_score }}%;">
-                    {{ vehicle.readiness_score }}%
-                </div>
-            </div>
+                        🗑 Delete Vehicle
 
-            {% elif vehicle.readiness_score >= 70 %}
+                    </a>
+                    <div class="text-center small text-muted mt-3">
 
-            <div class="progress mb-2" style="height:28px;">
-                <div class="progress-bar bg-warning text-dark" style="width: {{ vehicle.readiness_score }}%;">
-                    {{ vehicle.readiness_score }}%
-                </div>
-            </div>
+                        Added
 
-            {% else %}
+                        {{ vehicle.created_on|date:"d M Y" }}
 
-            <div class="progress mb-2" style="height:28px;">
-                <div class="progress-bar bg-danger" style="width: {{ vehicle.readiness_score }}%;">
-                    {{ vehicle.readiness_score }}%
-                </div>
-            </div>
-
-            {% endif %}
-
-            {% if vehicle.competition_status == "READY TO COMPETE" %}
-
-            <p class="text-success fw-bold text-center">
-                ✔ Ready to Compete
-            </p>
-
-            {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
-
-            <p class="text-warning fw-bold text-center">
-                ⚠ Needs Attention
-            </p>
-
-            {% else %}
-
-            <p class="text-danger fw-bold text-center">
-                ✖ Not Ready
-            </p>
-
-            {% endif %}
-
-            <div class="row text-center mt-4">
-
-                <div class="col-4">
-
-                    <h5 class="text-info">
-
-                        {{ vehicle.minor_repairs }}
-
-                    </h5>
-
-                    <small>Minor</small>
-
-                </div>
-
-                <div class="col-4">
-
-                    <h5 class="text-warning">
-
-                        {{ vehicle.major_repairs }}
-
-                    </h5>
-
-                    <small>Major</small>
-
-                </div>
-
-                <div class="col-4">
-
-                    <h5 class="text-danger">
-
-                        {{ vehicle.critical_repairs }}
-
-                    </h5>
-
-                    <small>Critical</small>
-
-                </div>
-            </div>
-            <div class="alert alert-light mt-4 mb-0">
-
-                <strong>Outstanding Repair Cost</strong>
-
-                <div class="fs-4">
-
-                    £{{ vehicle.repair_cost }}
-
-                </div>
-
-            </div>
-
-            <div class="card-footer d-grid gap-2 mt-auto">
-
-                <a href="{% url 'garage:edit_vehicle' vehicle.id %}" class="btn btn-outline-primary">
-
-                    ✏ Edit Vehicle
-
-                </a>
-
-                <a href="{% url 'garage:delete_vehicle' vehicle.id %}" class="btn btn-outline-danger">
-
-                    🗑 Delete Vehicle
-
-                </a>
-                <div class="text-center small text-muted mt-3">
-
-                    Added
-
-                    {{ vehicle.created_on|date:"d M Y" }}
-
+                    </div>
                 </div>
             </div>
         </div>
-
-    </div>
+    
 
     {% empty %}
 
@@ -885,6 +916,26 @@
     {% endfor %}
 
 </div>
+
+</div>
+
+<hr class="mt-5">
+
+<div class="text-center text-muted small py-5">
+
+    <strong>Motorsport Navigator</strong>
+
+    <br>
+
+    Garage Module
+
+    <span class="badge bg-success">
+        Version 1.0
+    </span>
+
+    <br>
+
+    Django • Bootstrap • PostgreSQL
 
 </div>
 

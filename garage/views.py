@@ -21,7 +21,7 @@ def garage(request):
 
     default_vehicle = vehicles.filter(
         is_default=True
-    ).count()
+    ).first()
 
     outstanding_repairs = Repair.objects.filter(
         vehicle__owner=request.user,
@@ -53,6 +53,27 @@ def garage(request):
 
         readiness = 100
 
+    ready_count = sum(
+        1 for vehicle in vehicles
+        if vehicle.competition_status == "READY TO COMPETE"
+    )
+
+    needs_attention = sum(
+        1 for vehicle in vehicles
+        if vehicle.competition_status == "NEEDS ATTENTION"
+    )
+
+    not_ready = sum(
+        1 for vehicle in vehicles
+        if vehicle.competition_status == "NOT READY"
+    )
+
+    mot_due = sum(
+        1 for vehicle in vehicles
+        if vehicle.mot_days_remaining is not None
+        and 0 <= vehicle.mot_days_remaining <=30
+    )
+
     return render(
         request,
         "garage/garage.html",
@@ -63,6 +84,10 @@ def garage(request):
             "readiness": round(readiness),
             "repair_cost":repair_cost,
             "completed_repairs": completed_repairs,
+            "ready_count": ready_count,
+            "needs_attention": needs_attention,
+            "not_ready": not_ready,
+            "mot_due": mot_due,
         }
     )
 

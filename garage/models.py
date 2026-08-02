@@ -129,6 +129,14 @@ class Vehicle(models.Model):
             return (f"{days} days remaining", "warning")
 
         return (f"{days} days remaining", "success")
+
+    @property
+    def insurance_days_remaining(self):
+    
+        if not self.insurance_expiry:
+            return None
+    
+        return (self.insurance_expiry - date.today()).days
     
     
     @property
@@ -146,6 +154,14 @@ class Vehicle(models.Model):
             return (f"{days} days remaining", "warning")
 
         return (f"{days} days remaining", "success")
+
+    @property
+    def mot_days_remaining(self):
+
+        if not self.mot_expiry:
+            return None
+
+        return (self.mot_expiry - date.today()).days
     
     @property
     def tax_status(self):
@@ -162,6 +178,17 @@ class Vehicle(models.Model):
             return (f"{days} days remaining", "warning")
 
         return (f"{days} days remaining", "success")
+
+    
+
+
+    @property
+    def tax_days_remaining(self):
+
+        if not self.tax_expiry:
+            return None
+
+        return (self.tax_expiry - date.today()).days
 
     @property
     def mot_valid(self):
