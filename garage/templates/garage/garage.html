@@ -491,9 +491,63 @@
 </h2>
 
 <div class="row">
+    <div class="card shadow-sm border-0 mb-5">
 
+                <div class="card-header bg-dark text-white">
+
+                    <h4>
+
+                        <i class="bi bi-bar-chart-fill"></i>
+
+                        Garage Statistics
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col">
+
+                            <h3>{{ vehicles.count }}</h3>
+
+                            <small>Vehicles</small>
+
+                        </div>
+
+                        <div class="col">
+
+                            <h3>{{ outstanding_repairs }}</h3>
+
+                            <small>Outstanding Repairs</small>
+
+                        </div>
+
+                        <div class="col">
+
+                            <h3>{{ completed_repairs }}</h3>
+
+                            <small>Completed Repairs</small>
+
+                        </div>
+
+                        <div class="col">
+
+                            <h3>£{{ repair_cost }}</h3>
+
+                            <small>Repair Cost</small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
     {% for vehicle in vehicles %}
-
+    
     <div class="col-lg-4 col-md-6 mb-4">
 
         <div class="card vehicle-card shadow h-100 d-flex flex-column">
@@ -523,6 +577,8 @@
             </div>
 
             {% endif %}
+
+            
 
             {% if vehicle.is_default %}
             <span class="badge bg-success mb-2">

@@ -214,14 +214,28 @@ class Vehicle(models.Model):
         score -= self.major_repairs * 10
         score -= self.critical_repairs * 25
 
-        if not self.mot_valid:
-            score -= 20
+        # Road vehicles must be legal to use
+        if self.vehicle_class == "Road":
 
-        if not self.insurance_valid:
-            score -= 20
+            if not self.mot_valid:
+                score -= 60
 
-        if not self.tax_valid:
-            score -= 15
+            if not self.insurance_valid:
+                score -= 60
+
+            if not self.tax_valid:
+                score -= 60
+
+        elif not self.vehicle_class == "Road":
+
+            if not self.mot_valid:
+                score -= 20
+            
+            if not self.insurance_valid:
+                score -= 20
+            
+            if not self.tax_valid:
+                score -= 15
     
         return max(score, 0)
 
@@ -238,9 +252,9 @@ class Vehicle(models.Model):
             if (
                 not self.mot_valid
                 or not self.insurance_valid
-                or not self.tax_valid
+                or  not self.tax_valid
             ):
-                 return "NOT READY"
+                return "NOT READY"
 
         # Critical repairs always make the vehicle not ready
         if self.critical_repairs > 0:
