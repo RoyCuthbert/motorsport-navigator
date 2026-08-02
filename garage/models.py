@@ -115,29 +115,53 @@ class Vehicle(models.Model):
         ordering = ["-is_default","make", "model"]
 
     @property
-    def insurance_days_remaining(self):
+    def insurance_status(self):
 
         if not self.insurance_expiry:
-            return None
+            return ("Missing", "danger")
 
-        return (self.insurance_expiry - date.today()).days
+        days = (self.insurance_expiry - date.today()).days
+
+        if days < 0:
+            return (f"Expired {-days} days ago", "danger")
+
+        if days <= 30:
+            return (f"{days} days remaining", "warning")
+
+        return (f"{days} days remaining", "success")
     
     
     @property
-    def mot_days_remaining(self):
+    def mot_status(self):
 
         if not self.mot_expiry:
-            return None
+            return ("Missing", "danger")
 
-        return (self.mot_expiry - date.today()).days
+        days = (self.mot_expiry - date.today()).days
+
+        if days < 0:
+            return (f"Expired {-days} days ago", "danger")
+
+        if days <= 30:
+            return (f"{days} days remaining", "warning")
+
+        return (f"{days} days remaining", "success")
     
     @property
-    def tax_days_remaining(self):
+    def tax_status(self):
 
         if not self.tax_expiry:
-            return None
+            return ("Missing", "danger")
 
-        return (self.tax_expiry - date.today()).days
+        days = (self.tax_expiry - date.today()).days
+
+        if days < 0:
+            return (f"Expired {-days} days ago", "danger")
+
+        if days <= 30:
+            return (f"{days} days remaining", "warning")
+
+        return (f"{days} days remaining", "success")
 
     @property
     def mot_valid(self):
@@ -214,28 +238,14 @@ class Vehicle(models.Model):
         score -= self.major_repairs * 10
         score -= self.critical_repairs * 25
 
-        # Road vehicles must be legal to use
-        if self.vehicle_class == "Road":
+        if not self.mot_valid:
+            score -= 30
 
-            if not self.mot_valid:
-                score -= 60
+        if not self.insurance_valid:
+            score -= 30
 
-            if not self.insurance_valid:
-                score -= 60
-
-            if not self.tax_valid:
-                score -= 60
-
-        elif not self.vehicle_class == "Road":
-
-            if not self.mot_valid:
-                score -= 20
-            
-            if not self.insurance_valid:
-                score -= 20
-            
-            if not self.tax_valid:
-                score -= 15
+        if self.vehicle_class == "Road" and not self.tax_valid:
+            score -= 20
     
         return max(score, 0)
 
@@ -268,7 +278,7 @@ class Vehicle(models.Model):
         ):
             return "NEEDS ATTENTION"
 
-        return "READY"
+        return "READY TO COMPETE"
 
     def __str__(self):
         return f"{self.registration} - {self.make} {self.model}"

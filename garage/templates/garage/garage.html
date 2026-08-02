@@ -493,78 +493,82 @@
 <div class="row">
     <div class="card shadow-sm border-0 mb-5">
 
-                <div class="card-header bg-dark text-white">
+        <div class="card-header bg-dark text-white">
 
-                    <h4>
+            <h4>
 
-                        <i class="bi bi-bar-chart-fill"></i>
+                <i class="bi bi-bar-chart-fill"></i>
 
-                        Garage Statistics
+                Garage Statistics
 
-                    </h4>
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col">
+
+                    <h3>{{ vehicles.count }}</h3>
+
+                    <small>Vehicles</small>
 
                 </div>
 
-                <div class="card-body">
+                <div class="col">
 
-                    <div class="row text-center">
+                    <h3>{{ outstanding_repairs }}</h3>
 
-                        <div class="col">
+                    <small>Outstanding Repairs</small>
 
-                            <h3>{{ vehicles.count }}</h3>
+                </div>
 
-                            <small>Vehicles</small>
+                <div class="col">
 
-                        </div>
+                    <h3>{{ completed_repairs }}</h3>
 
-                        <div class="col">
+                    <small>Completed Repairs</small>
 
-                            <h3>{{ outstanding_repairs }}</h3>
+                </div>
 
-                            <small>Outstanding Repairs</small>
+                <div class="col">
 
-                        </div>
+                    <h3>£{{ repair_cost }}</h3>
 
-                        <div class="col">
-
-                            <h3>{{ completed_repairs }}</h3>
-
-                            <small>Completed Repairs</small>
-
-                        </div>
-
-                        <div class="col">
-
-                            <h3>£{{ repair_cost }}</h3>
-
-                            <small>Repair Cost</small>
-
-                        </div>
-
-                    </div>
+                    <small>Repair Cost</small>
 
                 </div>
 
             </div>
+
+        </div>
+
+    </div>
     {% for vehicle in vehicles %}
-    
+
     <div class="col-lg-4 col-md-6 mb-4">
 
         <div class="card vehicle-card shadow h-100 d-flex flex-column">
 
-            {% if vehicle.readiness_score >= 80 %}
+            {% if vehicle.competition_status == "READY TO COMPETE" %}
 
             <div class="card-header bg-success text-white text-center">
 
-                <strong>🟢 READY TO COMPETE</strong>
+                <strong>
+                    🟢 READY TO COMPETE
+                </strong>
 
             </div>
 
-            {% elif vehicle.readiness_score >= 60 %}
+            {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
 
             <div class="card-header bg-warning text-dark text-center">
 
-                <strong>🟡 NEEDS ATTENTION</strong>
+                <strong>
+                    🟡 NEEDS ATTENTION
+                </strong>
 
             </div>
 
@@ -572,13 +576,15 @@
 
             <div class="card-header bg-danger text-white text-center">
 
-                <strong>🔴 NOT READY</strong>
+                <strong>
+                    🔴 NOT READY
+                </strong>
 
             </div>
 
             {% endif %}
 
-            
+
 
             {% if vehicle.is_default %}
             <span class="badge bg-success mb-2">
@@ -687,52 +693,34 @@
 
                     <!-- MOT -->
 
-                    {% if vehicle.mot_valid %}
-                    <p class="text-success mb-0">
-                        ✔ MOT Valid
+                    <p>
+                        MOT
+                        <span class="badge bg-{{ vehicle.mot_status.1 }}">
+                            {{ vehicle.mot_status.0 }}
+                        </span>
                     </p>
-                    <small class="text-muted">
-                        {{ vehicle.mot_days_remaining }} days remaining
-                    </small>
-                    {% else %}
-                    <p class="text-danger mb-0">
-                        ❌ MOT Expired
-                    </p>
-                    {% endif %}
 
                     <hr>
 
                     <!-- Insurance -->
 
-                    {% if vehicle.insurance_valid %}
-                    <p class="text-success mb-0">
-                        ✔ Insurance Valid
+                     <p>
+                        Insurance
+                        <span class="badge bg-{{ vehicle.insurance_status.1 }}">
+                            {{ vehicle.insurance_status.0 }}
+                        </span>
                     </p>
-                    <small class="text-muted">
-                        {{ vehicle.insurance_days_remaining }} days remaining
-                    </small>
-                    {% else %}
-                    <p class="text-danger mb-0">
-                        ❌ Insurance Expired
-                    </p>
-                    {% endif %}
 
                     <hr>
 
                     <!-- Tax -->
 
-                    {% if vehicle.tax_valid %}
-                    <p class="text-success mb-0">
-                        ✔ Tax Valid
+                     <p>
+                        Tax
+                        <span class="badge bg-{{ vehicle.tax_status.1 }}">
+                            {{ vehicle.tax_status.0 }}
+                        </span>
                     </p>
-                    <small class="text-muted">
-                        {{ vehicle.tax_days_remaining }} days remaining
-                    </small>
-                    {% else %}
-                    <p class="text-danger mb-0">
-                        ❌ Tax Expired
-                    </p>
-                    {% endif %}
 
                 </div>
 
@@ -748,55 +736,45 @@
             {% if vehicle.readiness_score >= 90 %}
 
             <div class="progress mb-2" style="height:28px;">
-
                 <div class="progress-bar bg-success" style="width: {{ vehicle.readiness_score }}%;">
-
                     {{ vehicle.readiness_score }}%
-
                 </div>
-
             </div>
-
-            <p class="text-success fw-bold">
-
-                ✔ Ready to Compete
-
-            </p>
 
             {% elif vehicle.readiness_score >= 70 %}
 
             <div class="progress mb-2" style="height:28px;">
-
                 <div class="progress-bar bg-warning text-dark" style="width: {{ vehicle.readiness_score }}%;">
-
                     {{ vehicle.readiness_score }}%
-
                 </div>
-
             </div>
-
-            <p class="text-warning fw-bold">
-
-                ⚠ Minor Work Required
-
-            </p>
 
             {% else %}
 
             <div class="progress mb-2" style="height:28px;">
-
                 <div class="progress-bar bg-danger" style="width: {{ vehicle.readiness_score }}%;">
-
                     {{ vehicle.readiness_score }}%
-
                 </div>
-
             </div>
 
-            <p class="text-danger fw-bold">
+            {% endif %}
 
-                ✖ Not Competition Ready
+            {% if vehicle.competition_status == "READY TO COMPETE" %}
 
+            <p class="text-success fw-bold text-center">
+                ✔ Ready to Compete
+            </p>
+
+            {% elif vehicle.competition_status == "NEEDS ATTENTION" %}
+
+            <p class="text-warning fw-bold text-center">
+                ⚠ Needs Attention
+            </p>
+
+            {% else %}
+
+            <p class="text-danger fw-bold text-center">
+                ✖ Not Ready
             </p>
 
             {% endif %}
