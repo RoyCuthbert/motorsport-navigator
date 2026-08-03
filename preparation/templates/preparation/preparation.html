@@ -1,103 +1,161 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <div class="container py-5">
+    <h1 class="fw-bold text-danger mb-4">🏁 Event Preparation Centre</h1>
 
-    <h1 class="fw-bold text-danger mb-4">
-        🏁 Event Preparation Centre
-    </h1>
+    <p class="text-muted mb-5">Everything you need before competing.</p>
 
-    <p class="text-muted mb-5">
-        Everything you need before competing.
-    </p>
-
-    <div class="row">
-
-        {% for vehicle in vehicles %}
-
-        <div class="col-lg-4 mb-4">
-
-            <div class="card shadow border-0 h-100">
-
+    <div class="row mb-5">
+        <div class="col-lg-4">
+            <div class="card shadow h-100">
                 <div class="card-header bg-danger text-white">
-
-                    <h5>
-
-                        {{ vehicle.make }}
-                        {{ vehicle.model }}
-
-                    </h5>
-
+                    Selected Competition Vehicle
                 </div>
 
                 <div class="card-body">
+                    {% if default_vehicle %}
 
-                    <h2 class="display-4">
+                    <h3>{{ default_vehicle.nickname }}</h3>
 
-                        {{ vehicle.readiness_score }}%
+                    <p>{{ default_vehicle.make }} {{ default_vehicle.model }}</p>
 
-                    </h2>
+                    <p>{{ default_vehicle.registration }}</p>
 
-                    <p class="text-muted">
+                    <span class="badge bg-success"> Default Vehicle </span>
 
-                        Competition Readiness
-
-                    </p>
-
-                    <hr>
-
-                    {% if vehicle.mot_valid %}
-                        <p class="text-success">✔ MOT</p>
                     {% else %}
-                        <p class="text-danger">✖ MOT</p>
+
+                    <p>No default vehicle selected.</p>
+
                     {% endif %}
-
-                    {% if vehicle.insurance_valid %}
-                        <p class="text-success">✔ Insurance</p>
-                    {% else %}
-                        <p class="text-danger">✖ Insurance</p>
-                    {% endif %}
-
-                    {% if vehicle.tax_valid %}
-                        <p class="text-success">✔ Tax</p>
-                    {% else %}
-                        <p class="text-danger">✖ Tax</p>
-                    {% endif %}
-
-                    <hr>
-
-                    <p>
-
-                        🔴 Critical Repairs:
-                        {{ vehicle.critical_repairs }}
-
-                    </p>
-
-                    <p>
-
-                        🟠 Major Repairs:
-                        {{ vehicle.major_repairs }}
-
-                    </p>
-
-                    <p>
-
-                        🟡 Minor Repairs:
-                        {{ vehicle.minor_repairs }}
-
-                    </p>
-
                 </div>
-
             </div>
-
         </div>
 
-        {% endfor %}
+        <div class="col-lg-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    Preparation Progress
+                </div>
 
+                <div class="card-body text-center">
+                    <h1>0%</h1>
+
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: 0%"></div>
+                    </div>
+
+                    <p class="mt-3">Nothing checked yet</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">Event Status</div>
+
+                <div class="card-body">
+                    <h5>No Event Selected</h5>
+
+                    <p class="text-muted">Select an event to begin preparation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card mb-4 shadow h-100" id="vehicle-checks">
+            <div class="card-header bg-danger text-white">🔧 Vehicle Checks</div>
+
+            <div class="card-body">
+                {% for item in vehicle_checks %}
+
+                <div class="form-check mb-2">
+                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
+
+                        {% csrf_token %}
+                        <input type="hidden" name="section" value="vehicle-checks">
+                        <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
+                            onchange="this.form.submit();">
+
+                    </form>
+
+                    <label class="form-check-label"> {{ item.item }} </label>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
+    <div class="col-lg-6">
+        <div class="card mb-4 shadow h-100" id="safety-checks">
+            <div class="card-header bg-success text-white">🦺 Safety Equipment</div>
+
+            <div class="card-body">
+                {% for item in safety_checks %}
+
+                <div class="form-check mb-2">
+                    <form action="{% url 'preparation:toggle_check' item.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="section" value="safety-checks">
+                        <input class="form-check-input" type="checkbox" 
+                        {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+                    </form>
+
+                    <label class="form-check-label"> {{ item.item }} </label>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card mb-4 shadow h-100" id="document-checks">
+            <div class="card-header bg-primary text-white">📄 Documents</div>
+
+            <div class="card-body">
+                {% for item in document_checks %}
+                <div class="form-check mb-2">
+                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="section" value="document-checks">
+                        <input class="form-check-input" type="checkbox" 
+                        {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+                    </form> 
+
+                    <label class="form-check-label"> {{ item.item }} </label>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow mb-4 h-100" id="tool-checks">
+            <div class="card-header bg-warning text-dark">🧰 Tools & Spares</div>
+
+            <div class="card-body">
+                {% for item in tool_checks %}
+
+                <div class="form-check mb-2">
+                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="section" value="tool-checks">
+                        <input class="form-check-input" type="checkbox" 
+                        {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+                    </form>
+                    <label class="form-check-label"> {{ item.item }} </label>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
