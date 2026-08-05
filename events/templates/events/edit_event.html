@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <h2>
+
+                ✏ Edit Event
+
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <button class="btn btn-primary btn-lg">
+
+                    Save Changes
+
+                </button>
+
+                <a href="{% url 'events:events' %}"
+                   class="btn btn-secondary btn-lg">
+
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

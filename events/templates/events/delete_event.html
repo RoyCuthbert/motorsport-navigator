@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="delete-confirm">
+    <h2>Delete Event</h2>
+
+    <p>
+        Are you sure you want to delete
+        <strong>{{ event.name }}</strong>
+        ({{ event.date }})?
+    </p>
+
+    <p>This action cannot be undone.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Delete</button>
+        <a href="{% url 'events:events' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

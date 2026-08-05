@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-xl py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+
+        <div>
+
+            <h1 class="fw-bold text-danger">
+
+                🏁 Events Centre
+
+            </h1>
+
+            <p class="text-muted">
+
+                Plan, organise and prepare for every competition.
+
+            </p>
+
+        </div>
+
+        <a href="{% url 'events:add_event' %}" class="btn btn-danger btn-lg mb-4">
+
+            <i class="bi bi-plus-circle"></i>
+
+            Add Event
+
+        </a>
+
+    </div>
+
+    <div class="row mb-5">
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <h2 class="text-primary">
+                        {{ events.count }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Total Events
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <h2 class="text-success">
+                        {{ upcoming }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Upcoming
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <h2 class="text-secondary">
+                        {{ completed }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Completed
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm text-center h-100">
+
+                <div class="card-body">
+
+                    <h2 class="text-danger">
+                        {{ cancelled }}
+                    </h2>
+
+                    <p class="mb-0">
+                        Cancelled
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    {% if events %}
+
+    <div class="row">
+
+        {% for event in events %}
+
+        <div class="col-lg-4 col-md-6 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5 class="mb-0">
+                        🏁 {{ event.title }}
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-sm">
+
+                        <tbody>
+
+                            <tr>
+                                <th>Date</th>
+                                <td>{{ event.event_date|date:"d M Y" }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Venue</th>
+                                <td>{{ event.venue }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Organiser</th>
+                                <td>{{ event.organiser|default:"Not Set" }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Vehicle</th>
+                                <td>{{ event.vehicle|default:"Not Assigned" }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>
+
+                                    {% if event.status == "Upcoming" %}
+                                    <span class="badge bg-success">
+                                        Upcoming
+                                    </span>
+
+                                    {% elif event.status == "Completed" %}
+
+                                    <span class="badge bg-secondary">
+                                        Completed
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                    {% if event.selected %}
+
+                    <div class="alert alert-success text-center mb-0">
+
+                        ⭐ Current Active Event
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="card-footer">
+
+                    <div class="d-grid gap-2">
+
+                        {% if not event.selected %}
+
+                        <a href="{% url 'events:select_event' event.id %}" class="btn btn-success">
+
+                            ⭐ Make Active
+
+                        </a>
+
+                        {% else %}
+
+                        <button class="btn btn-success" disabled>
+
+                            ⭐ Active Event
+
+                        </button>
+
+                        {% endif %}
+
+                        <a href="{% url 'events:edit_event' event.id %}" class="btn btn-outline-primary">
+
+                            ✏ Edit Event
+
+                        </a>
+
+                        <a href="{% url 'events:delete_event' event.id %}" class="btn btn-outline-danger">
+
+                            🗑 Delete Event
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center p-5">
+
+            <i class="bi bi-flag-fill display-1 text-danger"></i>
+
+            <h3>No Events Added</h3>
+
+            <p class="text-muted">
+
+                Create your first event to begin planning your rally season.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}
