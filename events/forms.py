@@ -11,6 +11,7 @@ class EventForm(forms.ModelForm):
 
         fields = [
             "title",
+            "event_type",
             "venue",
             "event_date",
             "organiser",

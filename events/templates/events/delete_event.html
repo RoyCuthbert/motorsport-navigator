@@ -1,21 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="delete-confirm">
-    <h2>Delete Event</h2>
 
-    <p>
-        Are you sure you want to delete
-        <strong>{{ event.name }}</strong>
-        ({{ event.date }})?
-    </p>
+<div class="container py-5">
 
-    <p>This action cannot be undone.</p>
+    <div class="card shadow border-0">
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn-danger">Yes, Delete</button>
-        <a href="{% url 'events:events' %}" class="btn-secondary">Cancel</a>
-    </form>
+        <div class="card-header bg-danger text-white">
+
+            <h2 class="mb-0">
+                🗑 Delete Event
+            </h2>
+
+        </div>
+
+        <div class="card-body text-center">
+
+            <i class="bi bi-exclamation-triangle-fill text-danger display-1 mb-4"></i>
+
+            <h4>
+
+                Are you sure?
+
+            </h4>
+
+            <p class="lead">
+
+                You are about to delete
+
+            </p>
+
+            <h3 class="text-danger">
+
+                {{ event.title }}
+
+            </h3>
+
+            <p>
+
+                {{ event.event_date|date:"d M Y" }}
+
+            </p>
+
+            <p class="text-muted">
+
+                This action cannot be undone.
+
+            </p>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger btn-lg">
+
+                    🗑 Delete Event
+
+                </button>
+
+                <a href="{% url 'events:events' %}"
+                   class="btn btn-secondary btn-lg">
+
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

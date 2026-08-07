@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from datetime import date
 
+from preparation.models import PreparationItem
 from .models import Event
 from garage.models import Vehicle
 # Create your views here.
@@ -11,21 +13,65 @@ def events(request):
         user=request.user
     )
 
+    today = date.today()
+
     upcoming = events.filter(
-        status="Upcoming"
+        event_date__gt=today
     ).count()
 
     completed = events.filter(
-        status="Completed"
+        event_date__lt=today
     ).count()
 
-    cancelled = events.filter(
-        status="Cancelled"
+    cancelled = 0
+
+    upcoming_events = Event.objects.filter(
+        user=request.user,
+        event_date__gte=date.today(),
     ).count()
 
-    active_event = events.filter(
-        selected=True
+    completed_events = Event.objects.filter(
+        user=request.user,
+        event_date__lt=date.today(),
+    ).count()
+
+    active_event = Event.objects.filter(
+        user=request.user,
+        selected=True,
     ).first()
+
+    total_events = Event.objects.filter(
+        user=request.user,
+    ).count()
+
+    for event in events:
+
+        if event.vehicle:
+
+            total = PreparationItem.objects.filter(
+                user=request.user,
+                vehicle=event.vehicle,
+            ).count()
+
+            completed = PreparationItem.objects.filter(
+                user=request.user,
+                vehicle=event.vehicle,
+                completed=True,
+            ).count()
+
+            if total:
+                event.progress = round((completed / total) * 100)
+            else:
+                event.progress = 0
+
+            event.completed_checks = completed
+            event.total_checks = total
+
+        else:
+
+            event.progress = 0
+            event.completed_checks = 0
+            event.total_checks = 0
 
     return render(
         request,
@@ -36,6 +82,10 @@ def events(request):
             "completed": completed,
             "cancelled": cancelled,
             "active_event": active_event,
+            "upcoming_events": upcoming_events,
+            "completed_events": completed_events,
+            "active_event": active_event,
+            "total_events": total_events,
         },
     )
 

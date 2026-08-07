@@ -1,274 +1,389 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <div class="container-xl py-5">
-
     <div class="d-flex justify-content-between align-items-center mb-5">
-
         <div>
-
             <h1 class="fw-bold text-danger">
+                <i class="bi bi-flag-fill"></i>
 
-                🏁 Events Centre
-
+                Events Centre
             </h1>
 
-            <p class="text-muted">
-
-                Plan, organise and prepare for every competition.
-
-            </p>
-
+            <p class="text-muted">Plan and manage your motorsport season.</p>
         </div>
 
-        <a href="{% url 'events:add_event' %}" class="btn btn-danger btn-lg mb-4">
-
+        <a href="{% url 'events:add_event' %}" class="btn btn-danger btn-lg">
             <i class="bi bi-plus-circle"></i>
 
             Add Event
-
         </a>
-
     </div>
 
     <div class="row mb-5">
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm text-center h-100">
-
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card shadow-sm text-center h-100">
                 <div class="card-body">
+                    <i class="bi bi-calendar-event display-4 text-primary"></i>
 
-                    <h2 class="text-primary">
-                        {{ events.count }}
-                    </h2>
+                    <h2>{{ upcoming_events }}</h2>
 
-                    <p class="mb-0">
-                        Total Events
-                    </p>
-
+                    <p class="text-muted mb-0">Upcoming Events</p>
                 </div>
-
             </div>
-
         </div>
 
-        <div class="col-md-3">
-
-            <div class="card shadow-sm text-center h-100">
-
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card shadow-sm text-center h-100">
                 <div class="card-body">
+                    <i class="bi bi-star-fill display-4 text-warning"></i>
 
-                    <h2 class="text-success">
-                        {{ upcoming }}
-                    </h2>
+                    <h5>
 
-                    <p class="mb-0">
-                        Upcoming
-                    </p>
+                        {% if active_event %}
 
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm text-center h-100">
-
-                <div class="card-body">
-
-                    <h2 class="text-secondary">
-                        {{ completed }}
-                    </h2>
-
-                    <p class="mb-0">
-                        Completed
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm text-center h-100">
-
-                <div class="card-body">
-
-                    <h2 class="text-danger">
-                        {{ cancelled }}
-                    </h2>
-
-                    <p class="mb-0">
-                        Cancelled
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-    {% if events %}
-
-    <div class="row">
-
-        {% for event in events %}
-
-        <div class="col-lg-4 col-md-6 mb-4">
-
-            <div class="card shadow-sm border-0 h-100">
-
-                <div class="card-header bg-danger text-white">
-
-                    <h5 class="mb-0">
-                        🏁 {{ event.title }}
-                    </h5>
-
-                </div>
-
-                <div class="card-body">
-
-                    <table class="table table-sm">
-
-                        <tbody>
-
-                            <tr>
-                                <th>Date</th>
-                                <td>{{ event.event_date|date:"d M Y" }}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Venue</th>
-                                <td>{{ event.venue }}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Organiser</th>
-                                <td>{{ event.organiser|default:"Not Set" }}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Vehicle</th>
-                                <td>{{ event.vehicle|default:"Not Assigned" }}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Status</th>
-                                <td>
-
-                                    {% if event.status == "Upcoming" %}
-                                    <span class="badge bg-success">
-                                        Upcoming
-                                    </span>
-
-                                    {% elif event.status == "Completed" %}
-
-                                    <span class="badge bg-secondary">
-                                        Completed
-                                    </span>
-
-                                    {% else %}
-
-                                    <span class="badge bg-danger">
-                                        Cancelled
-                                    </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                    {% if event.selected %}
-
-                    <div class="alert alert-success text-center mb-0">
-
-                        ⭐ Current Active Event
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-                <div class="card-footer">
-
-                    <div class="d-grid gap-2">
-
-                        {% if not event.selected %}
-
-                        <a href="{% url 'events:select_event' event.id %}" class="btn btn-success">
-
-                            ⭐ Make Active
-
-                        </a>
+                        {{ active_event.title }}
 
                         {% else %}
 
-                        <button class="btn btn-success" disabled>
-
-                            ⭐ Active Event
-
-                        </button>
+                        No Event
 
                         {% endif %}
 
-                        <a href="{% url 'events:edit_event' event.id %}" class="btn btn-outline-primary">
-
-                            ✏ Edit Event
-
-                        </a>
-
-                        <a href="{% url 'events:delete_event' event.id %}" class="btn btn-outline-danger">
-
-                            🗑 Delete Event
-
-                        </a>
-
-                    </div>
-
+                    </h5>
+                    <p class="text-muted mb-0">Current Event</p>
                 </div>
-
             </div>
-
         </div>
 
-        {% endfor %}
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-hourglass-split display-4 text-success"></i>
 
+                    <h2>
+                        {% if active_event %} {{ active_event.days_remaining }} {% else %} —
+                        {% endif %}
+                    </h2>
+
+                    <p class="text-muted mb-0">Days Remaining</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card summary-card shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-flag-fill display-4 text-danger"></i>
+
+                    <h2>{{ total_events }}</h2>
+
+                    <p class="text-muted mb-0">Season Events</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {% else %}
+    {% if active_event %}
 
-    <div class="card shadow-sm border-0">
+    <div class="card shadow border-0 mb-5">
+        <div class="alert alert-success text-center py-4">
 
-        <div class="card-body text-center p-5">
+            <h5 class="text-uppercase mb-2">
 
-            <i class="bi bi-flag-fill display-1 text-danger"></i>
+                ⭐ Currently Preparing For
 
-            <h3>No Events Added</h3>
+            </h5>
 
-            <p class="text-muted">
+            <h2 class="fw-bold">
 
-                Create your first event to begin planning your rally season.
+                {{ active_event.title }}
 
-            </p>
+            </h2>
+
+            <span class="badge bg-dark mt-2">
+
+                {{ active_event.event_type }}
+
+            </span>
 
         </div>
 
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+
+                    <p class="mb-1">
+                        <i class="bi bi-calendar-event"></i>
+
+                        {{ active_event.event_date|date:"d F Y" }}
+                    </p>
+
+                    <p class="mb-1">
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ active_event.venue }}
+                    </p>
+                    <p class="mb-1">
+                        <i class="bi bi-person-fill"></i>
+                        {{ active_event.organiser }}
+                    </p>
+
+                    <p>
+                        <i class="bi bi-car-front-fill"></i>
+
+                        {{ active_event.vehicle|default:"Vehicle not assigned" }}
+                    </p>
+                </div>
+
+                <div class="col-md-6 text-center">
+                    <h1 class="display-3 text-success">
+                        {{ active_event.days_remaining }}
+                    </h1>
+
+                    <p class="lead">Days Remaining</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% endif %}
-</div>
 
-{% endblock %}
+
+    {% if events %}
+
+    <div class="row">
+        {% for event in events %}
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                {% if event.days_remaining > 0 %}
+
+                <div class="card-header bg-success text-white">
+
+                    {% elif event.days_remaining == 0 %}
+
+                    <div class="card-header bg-warning text-dark">
+
+                        {% else %}
+
+                        <div class="card-header bg-secondary text-white">
+
+                            {% endif %}
+                            <h5 class="mb-0">
+
+                                🏁 {{ event.title }}
+
+                            </h5>
+
+                            <small>
+
+                                {{ event.event_type }}
+
+                            </small>
+                        </div>
+
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th>🏁 Type</th>
+                                        <td>
+                                            <span class="badge bg-dark">
+                                                {{ event.event_type }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>📅 Date</th>
+                                        <td>{{ event.event_date|date:"d M Y" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>📍 Venue</th>
+                                        <td>{{ event.venue }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>👤 Organiser</th>
+                                        <td>{{ event.organiser|default:"Not Set" }}</td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>🚗 Vehicle</th>
+
+                                        <td>
+
+                                            {% if event.vehicle %}
+
+                                            <strong>{{ event.vehicle.nickname }}</strong><br>
+
+                                            <small class="text-muted">
+
+                                                {{ event.vehicle.make }} {{ event.vehicle.model }}
+
+                                            </small>
+
+                                            {% else %}
+
+                                            <span class="text-muted">
+
+                                                No Vehicle Assigned
+
+                                            </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <th>⏳ Countdown</th>
+
+                                        <td>
+                                            {% if event.days_remaining > 1 %}
+
+                                            {{ event.days_remaining }} Days Remaining
+
+                                            {% elif event.days_remaining == 1 %}
+
+                                            Tomorrow
+
+                                            {% elif event.days_remaining == 0 %}
+
+                                            Today
+
+                                            {% else %}
+
+                                            Completed
+
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>📊 Status</th>
+
+                                        <td>
+
+                                            {% if event.days_remaining > 0 %}
+
+                                            <span class="badge bg-success">
+
+                                                Upcoming
+
+                                            </span>
+
+                                            {% elif event.days_remaining == 0 %}
+
+                                            <span class="badge bg-warning text-dark">
+
+                                                Running Today
+
+                                            </span>
+
+                                            {% else %}
+
+                                            <span class="badge bg-secondary">
+
+                                                Completed
+
+                                            </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h6 class="mt-3">
+
+                                Preparation Progress
+
+                            </h6>
+
+                            <div class="progress mb-2" style="height:22px;">
+
+                                <div class="progress-bar
+        {% if event.progress >= 100 %}
+            bg-success
+        {% elif event.progress >= 75 %}
+            bg-warning text-dark
+        {% else %}
+            bg-danger
+        {% endif %}" role="progressbar" style="width: {{ event.progress }}%;">
+
+                                    {{ event.progress }}%
+
+                                </div>
+
+                            </div>
+
+                            <small class="text-muted">
+
+                                {{ event.completed_checks }} of {{ event.total_checks }} checks completed
+
+                            </small>
+
+                            {% if event.selected %}
+
+                            <div class="alert alert-success text-center mb-0">
+                                ⭐ Current Active Event
+                            </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="d-grid gap-2">
+                                {% if not event.selected %}
+
+                                <a href="{% url 'events:select_event' event.id %}" class="btn btn-success">
+                                    ⭐ Make Active
+                                </a>
+
+                                {% else %}
+
+                                <button class="btn btn-success" disabled>⭐ Active Event</button>
+
+                                {% endif %}
+
+                                <a href="{% url 'events:edit_event' event.id %}" class="btn btn-outline-primary">
+                                    ✏ Edit Event
+                                </a>
+
+                                <a href="{% url 'events:delete_event' event.id %}" class="btn btn-outline-danger">
+                                    🗑 Delete Event
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+
+            {% else %}
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-flag-fill display-1 text-danger"></i>
+
+                    <h3>No Events Added</h3>
+
+                    <p class="text-muted">
+                        Create your first event to begin planning your rally season.
+                    </p>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+
+        {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 {% load static %}
 {% block content %}
 
@@ -7,12 +7,11 @@
 
     <p class="text-muted mb-5">Everything you need before competing.</p>
 
-    <a href="{% url 'events:events' %}"
-        class="btn btn-primary btn-lg">
+    <a href="{% url 'events:events' %}" class="btn btn-primary btn-lg">
 
         <i class="bi bi-flag-fill"></i>
 
-            Events
+        Events
 
     </a>
 
@@ -269,7 +268,29 @@
                 <div class="card-header bg-primary text-white">Event Status</div>
 
                 <div class="card-body">
-                    <h5>No Event Selected</h5>
+                    {% if active_event %}
+
+                    <div class="alert alert-success">
+
+                        <h5>🏁 Current Event</h5>
+
+                        <strong>{{ active_event.title }}</strong><br>
+
+                        {{ active_event.event_type }}<br>
+
+                        {{ active_event.event_date|date:"d F Y" }}
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="alert alert-secondary">
+
+                        No Event Selected
+
+                    </div>
+
+                    {% endif %}
 
                     <p class="text-muted">Select an event to begin preparation.</p>
                 </div>

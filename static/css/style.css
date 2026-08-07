@@ -109,3 +109,47 @@ footer{
     color:white;
 
 }
+
+.form-check-input:checked + .form-check-label{
+
+    text-decoration: line-through;
+
+    color:#6c757d;
+
+    opacity:.75;
+
+}
+
+/* ===========================
+   EVENT PREPARATION PROGRESS
+=========================== */
+
+.progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    font-weight: 600;
+    transition: width 0.6s ease;
+}
+
+.summary-card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,.15);
+}
+
+.summary-card i {
+    margin-bottom: 12px;
+}
+
+.card-header {
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+}

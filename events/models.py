@@ -1,6 +1,26 @@
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
+from datetime import date
+
+EVENT_TYPES = [
+        ("12 Car", "12 Car Rally"),
+        ("Road Rally", "Road Rally"),
+        ("Targa", "Targa Rally"),
+        ("Autosolo", "Autosolo"),
+        ("Autotest", "Autotest"),
+        ("Production Car Trial", "Production Car Trial"),
+        ("Sporting Trial", "Sporting Trial"),
+        ("Stage Rally", "Stage Rally"),
+        ("Hill Climb", "Hill Climb"),
+        ("Sprint", "Sprint"),
+        ("Track Day", "Track Day"),
+        ("Test Day", "Test Day"),
+        ("Navigational Scatter", "Scatter Rally"),
+        ("Treasure Hunt", "Treasure Hunt"),
+        ("Social", "Club Social"),
+        ("Training", "Training"),
+        ("Other", "Other"),
+    ]
 
 
 class Event(models.Model):
@@ -25,6 +45,12 @@ class Event(models.Model):
 
     title = models.CharField(max_length=100)
 
+    event_type = models.CharField(
+            max_length=50,
+            choices=EVENT_TYPES,
+            default="Road Rally",
+    )
+
     organiser = models.CharField(
         max_length=100,
         blank=True,
@@ -33,11 +59,6 @@ class Event(models.Model):
     venue = models.CharField(max_length=100)
 
     event_date = models.DateField()
-
-    event_type = models.CharField(
-        max_length=50,
-        default="Rally",
-    )
 
     status = models.CharField(
         max_length=20,
@@ -63,7 +84,6 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
-@property
-def days_remaining(self):
-    delta = self.event_date - timezone.now().date()
-    return delta.days
+    @property
+    def days_remaining(self):
+        return (self.event_date - date.today()).days

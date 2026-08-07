@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from .models import PreparationItem
 from .checklist import create_default_checklist
-
+from events.models import Event
 
 from garage.models import Vehicle
 
@@ -18,6 +18,19 @@ def preparation(request):
         owner=request.user,
         is_default=True,
     ).first()
+
+    active_event = Event.objects.filter(
+        user=request.user,
+        selected=True,
+    ).first()
+
+    if active_event and active_event.vehicle:
+        current_vehicle = active_event.vehicle
+    else:
+        current_vehicle = Vehicle.objects.filter(
+            owner=request.user,
+            is_default=True,
+        ).first()
 
     vehicles = Vehicle.objects.filter(
         owner=request.user
@@ -103,6 +116,7 @@ def preparation(request):
         "preparation/preparation.html",
         {
             "default_vehicle": default_vehicle,
+            "active_event":active_event,
             "vehicles": vehicles,
             "vehicle_checks": vehicle_checks,
             "safety_checks": safety_checks,
