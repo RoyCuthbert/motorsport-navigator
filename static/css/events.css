@@ -1,0 +1,63 @@
+/* ==========================================
+   EVENTS CENTRE
+   ========================================== */
+
+.event-preparation-progress {
+    padding: 10px 0;
+}
+
+.preparation-progress-bar {
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.preparation-progress-bar .progress-bar {
+    transition: width 0.4s ease;
+}
+
+
+/* ==========================================
+   PREPARATION STATUS
+   ========================================== */
+
+.event-preparation-progress strong {
+    font-size: 0.9rem;
+}
+
+.event-preparation-progress small {
+    color: #6c757d;
+}
+
+
+/* ==========================================
+   EVENT CARDS
+   ========================================== */
+
+.event-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-3px);
+}
+
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 576px) {
+
+    .event-preparation-progress {
+        margin-top: 12px;
+    }
+
+    .preparation-progress-bar {
+        height: 12px;
+    }
+
+}

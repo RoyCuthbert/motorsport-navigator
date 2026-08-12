@@ -11,74 +11,100 @@ def events(request):
 
     events = Event.objects.filter(
         user=request.user
-    )
-
-    today = date.today()
+    ).order_by("event_date")
 
     upcoming = events.filter(
-        event_date__gt=today
+        status="Upcoming"
     ).count()
 
     completed = events.filter(
-        event_date__lt=today
+        status="Completed"
     ).count()
 
-    cancelled = 0
-
-    upcoming_events = Event.objects.filter(
-        user=request.user,
-        event_date__gte=date.today(),
+    cancelled = events.filter(
+        status="Cancelled"
     ).count()
 
-    completed_events = Event.objects.filter(
-        user=request.user,
-        event_date__lt=date.today(),
-    ).count()
-
-    active_event = Event.objects.filter(
-        user=request.user,
-        selected=True,
+    active_event = events.filter(
+        selected=True
     ).first()
 
-    total_events = Event.objects.filter(
-        user=request.user,
+    upcoming_events = events.filter(
+        event_date__gte=date.today()
     ).count()
+
+    completed_events = events.filter(
+        event_date__lt=date.today()
+    ).count()
+
+    total_events = events.count()
+
+    # -----------------------------------------
+    # PREPARATION PROGRESS FOR EACH EVENT
+    # -----------------------------------------
 
     for event in events:
 
-        total = PreparationItem.objects.filter(
+        preparation_checks = PreparationItem.objects.filter(
             user=request.user,
             event=event,
+        )
+
+        total_checks = preparation_checks.count()
+
+        completed_checks = preparation_checks.filter(
+            completed=True
         ).count()
 
-        completed = PreparationItem.objects.filter(
-            user=request.user,
-            event=event,
-            completed=True,
-        ).count()
+        event.total_checks = total_checks
+        event.completed_checks = completed_checks
 
-        if total:
+        if total_checks:
+
             event.progress = round(
-                (completed / total) * 100
+                (completed_checks / total_checks) * 100
             )
+
         else:
+
             event.progress = 0
 
-        event.completed_checks = completed
-        event.total_checks = total
+        # Preparation status
+        if total_checks == 0:
+
+            event.preparation_status = "Not Started"
+            event.preparation_status_class = "secondary"
+
+        elif event.progress == 100:
+
+            event.preparation_status = "Ready for Event"
+            event.preparation_status_class = "success"
+
+        elif event.progress >= 75:
+
+            event.preparation_status = "Almost Ready"
+            event.preparation_status_class = "warning"
+
+        else:
+
+            event.preparation_status = "Preparation Required"
+            event.preparation_status_class = "danger"
 
     return render(
         request,
         "events/events.html",
         {
             "events": events,
+
             "upcoming": upcoming,
             "completed": completed,
             "cancelled": cancelled,
+
             "active_event": active_event,
+
             "upcoming_events": upcoming_events,
             "completed_events": completed_events,
-            "active_event": active_event,
+
             "total_events": total_events,
         },
     )
@@ -128,7 +154,9 @@ def select_event(request, event_id):
     Event.objects.filter(
         user=request.user,
         selected=True,
-    ).update(selected=False)
+    ).update(
+        selected=False
+    )
 
     event = get_object_or_404(
         Event,
@@ -143,22 +171,6 @@ def select_event(request, event_id):
 
     if next_page == "preparation":
         return redirect("preparation:preparation")
-
-    return redirect("events:events")
-
-    Event.objects.filter(
-        user=request.user,
-        selected=True,
-    ).update(selected=False)
-
-    event = get_object_or_404(
-        Event,
-        id=event_id,
-        user=request.user,
-    )
-
-    event.selected = True
-    event.save()
 
     return redirect("events:events")
 

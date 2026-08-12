@@ -124,6 +124,26 @@ footer{
    EVENT PREPARATION PROGRESS
 =========================== */
 
+.event-preparation {
+    padding: 10px 0;
+}
+
+.event-progress {
+    height: 10px;
+    border-radius: 999px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.event-progress .progress-bar {
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+
+.event-preparation small {
+    font-size: 0.75rem;
+}
+
 .progress {
     border-radius: 10px;
     background-color: #e9ecef;

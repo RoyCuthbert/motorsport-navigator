@@ -16,7 +16,7 @@
     padding: 12px;
 }
 
-* Outer wrapper — just spacing now. Border/background/hover
+/* Outer wrapper — just spacing now. Border/background/hover
    live on .checklist-row below, since that's the element that
    fills the row and is the actual clickable target. */
 .checklist-item {
