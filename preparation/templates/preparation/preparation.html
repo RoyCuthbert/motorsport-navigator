@@ -1,36 +1,312 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/preparation.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<div class="container-fluid px-5 py-5">
-    <h1 class="fw-bold text-danger mb-4">🏁 Event Preparation Centre</h1>
+<div class="container-fluid px-4 px-lg-5 py-4">
 
-    <p class="text-muted mb-5">Everything you need before competing.</p>
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
 
-    <a href="{% url 'events:events' %}" class="btn btn-primary btn-lg">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
 
-        <i class="bi bi-flag-fill"></i>
+        <div>
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-tools text-danger"></i>
+                Preparation Centre
+            </h1>
 
-        Events
+            <p class="text-muted mb-0">
+                Get your competition car ready for the next event.
+            </p>
+        </div>
 
-    </a>
+        <a href="{% url 'events:events' %}" class="btn btn-outline-secondary mt-3 mt-md-0">
 
-    <div class="card shadow border-0 mb-5">
+            <i class="bi bi-arrow-left"></i>
+            Events Centre
+
+        </a>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- EVENT SELECTOR -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-7 mb-3 mb-lg-0">
+
+                    <h5 class="mb-1">
+
+                        <i class="bi bi-flag-fill text-success"></i>
+
+                        Select Competition
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        Choose the event you are currently preparing for.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-5">
+
+                    <select class="form-select" onchange="if (this.value) window.location.href=this.value;">
+
+                        <option value="">
+                            Select an event...
+                        </option>
+
+                        {% for event in events %}
+
+                        <option value="{% url 'events:select_event' event.id %}?next=preparation"
+                            {% if active_event and event.id == active_event.id %} selected {% endif %}>
+
+                            {{ event.title }}
+                            —
+                            {{ event.event_date|date:"d M Y" }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- NO EVENT SELECTED -->
+    <!-- ===================================================== -->
+
+    {% if not active_event %}
+
+    <div class="alert alert-warning shadow-sm">
+
+        <h5 class="alert-heading">
+
+            <i class="bi bi-exclamation-triangle"></i>
+
+            No Event Selected
+
+        </h5>
+
+        <p class="mb-0">
+
+            Select an event above before starting your preparation checklist.
+
+        </p>
+
+    </div>
+
+    {% else %}
+
+
+    <!-- ===================================================== -->
+    <!-- CURRENT EVENT -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <!-- EVENT -->
+                <div class="col-lg-5 mb-4 mb-lg-0">
+
+                    <small class="text-muted text-uppercase fw-bold">
+
+                        Currently Preparing For
+
+                    </small>
+
+                    <h2 class="fw-bold mb-2">
+
+                        🏁 {{ active_event.title }}
+
+                    </h2>
+
+                    <p class="mb-1">
+
+                        <i class="bi bi-calendar-event"></i>
+
+                        {{ active_event.event_date|date:"d F Y" }}
+
+                    </p>
+
+                    <p class="mb-2">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ active_event.venue }}
+
+                    </p>
+
+                    <span class="badge bg-dark">
+
+                        {{ active_event.event_type }}
+
+                    </span>
+
+                </div>
+
+
+                <!-- VEHICLE -->
+                <div class="col-lg-4 mb-4 mb-lg-0">
+
+                    <small class="text-muted text-uppercase fw-bold">
+
+                        Competition Vehicle
+
+                    </small>
+
+                    {% if current_vehicle %}
+
+                    <h3 class="fw-bold mb-1">
+
+                        🚗 {{ current_vehicle.nickname }}
+
+                    </h3>
+
+                    <p class="mb-1 text-muted">
+
+                        {{ current_vehicle.make }}
+                        {{ current_vehicle.model }}
+
+                    </p>
+
+                    <small class="text-muted">
+
+                        {{ current_vehicle.registration }}
+
+                    </small>
+
+                    {% else %}
+
+                    <div class="alert alert-danger mb-0">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        No vehicle assigned to this event.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- COUNTDOWN -->
+                <div class="col-lg-3 text-lg-center">
+
+                    <small class="text-muted text-uppercase fw-bold">
+
+                        Event Countdown
+
+                    </small>
+
+                    {% if active_event.days_remaining > 0 %}
+
+                    <h1 class="display-4 fw-bold text-danger mb-0">
+
+                        {{ active_event.days_remaining }}
+
+                    </h1>
+
+                    {% elif active_event.days_remaining == 0 %}
+
+                    <h1 class="display-4 fw-bold text-success mb-0">
+
+                        🏁
+
+                    </h1>
+
+                    {% else %}
+
+                    <h1 class="display-4 fw-bold text-secondary mb-0">
+
+                        ✓
+
+                    </h1>
+
+                    {% endif %}
+
+                    <p class="mb-0">
+
+                        {% if active_event.days_remaining > 1 %}
+
+                        Days Remaining
+
+                        {% elif active_event.days_remaining == 1 %}
+
+                        Day Remaining
+
+                        {% elif active_event.days_remaining == 0 %}
+
+                        Event Today
+
+                        {% else %}
+
+                        Event Completed
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- OVERALL PREPARATION -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow border-0 mb-4">
 
         <div class="card-header bg-success text-white">
 
             <h4 class="mb-0">
+
                 <i class="bi bi-clipboard-check"></i>
+
                 Preparation Progress
+
             </h4>
 
         </div>
 
         <div class="card-body">
 
-            <div class="row text-center">
+            <div class="row text-center mb-4">
 
-                <div class="col-md-3">
+                <div class="col-md-3 mb-3 mb-md-0">
 
                     <h2 class="text-success">
 
@@ -39,12 +315,14 @@
                     </h2>
 
                     <small class="text-muted">
+
                         Overall Readiness
+
                     </small>
 
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mb-3 mb-md-0">
 
                     <h2>
 
@@ -53,12 +331,14 @@
                     </h2>
 
                     <small class="text-muted">
+
                         Completed
+
                     </small>
 
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-3 mb-3 mb-md-0">
 
                     <h2>
 
@@ -67,7 +347,9 @@
                     </h2>
 
                     <small class="text-muted">
-                        Checks
+
+                        Total Checks
+
                     </small>
 
                 </div>
@@ -104,11 +386,14 @@
 
             </div>
 
-            <div class="progress mt-4" style="height:28px;">
+
+            <!-- MAIN PROGRESS BAR -->
+
+            <div class="progress" style="height: 28px;">
 
                 {% if progress == 100 %}
 
-                <div class="progress-bar bg-success" style="width: {{ progress }}%;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;">
 
                     {{ progress }}%
 
@@ -116,7 +401,7 @@
 
                 {% elif progress >= 75 %}
 
-                <div class="progress-bar bg-warning text-dark" style="width: {{ progress }}%;">
+                <div class="progress-bar bg-warning text-dark" role="progressbar" style="width: {{ progress }}%;">
 
                     {{ progress }}%
 
@@ -124,7 +409,7 @@
 
                 {% else %}
 
-                <div class="progress-bar bg-danger" style="width: {{ progress }}%;">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ progress }}%;">
 
                     {{ progress }}%
 
@@ -134,307 +419,594 @@
 
             </div>
 
+
+            {% if checks_remaining == 0 %}
+
+            <div class="alert alert-success mt-3 mb-0">
+
+                🏁 <strong>Competition Ready!</strong>
+
+                Everything is ready for the event.
+
+            </div>
+
+            {% else %}
+
+            <p class="text-muted mt-3 mb-0">
+
+                <i class="bi bi-info-circle"></i>
+
+                {{ checks_remaining }}
+                checks remaining before you're event ready.
+
+            </p>
+
+            {% endif %}
+
         </div>
 
     </div>
 
-    <div class="text-center mt-3">
 
-        {% if checks_remaining == 0 %}
+    <!-- ===================================================== -->
+    <!-- CATEGORY PROGRESS -->
+    <!-- ===================================================== -->
 
-        <span class="text-success fw-bold">
-            ✔ Everything is ready for the event!
-        </span>
+    <div class="row mb-4">
 
-        {% else %}
+        <!-- VEHICLE -->
 
-        <span class="text-muted">
-            {{ checks_remaining }} checks remaining before you're event ready.
-        </span>
+        <div class="col-lg-3 col-md-6 mb-3">
 
-        {% endif %}
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+
+                        🚗 Vehicle
+
+                    </h6>
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small>
+
+                            {{ vehicle_completed }}/{{ vehicle_total }}
+
+                        </small>
+
+                        <small>
+
+                            {{ vehicle_progress }}%
+
+                        </small>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar bg-danger" style="width: {{ vehicle_progress }}%;"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SAFETY -->
+
+        <div class="col-lg-3 col-md-6 mb-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+
+                        🛡️ Safety
+
+                    </h6>
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small>
+
+                            {{ safety_completed }}/{{ safety_total }}
+
+                        </small>
+
+                        <small>
+
+                            {{ safety_progress }}%
+
+                        </small>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar bg-warning" style="width: {{ safety_progress }}%;"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DOCUMENTS -->
+
+        <div class="col-lg-3 col-md-6 mb-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+
+                        📄 Documents
+
+                    </h6>
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small>
+
+                            {{ document_completed }}/{{ document_total }}
+
+                        </small>
+
+                        <small>
+
+                            {{ document_progress }}%
+
+                        </small>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar bg-info" style="width: {{ document_progress }}%;"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOOLS -->
+
+        <div class="col-lg-3 col-md-6 mb-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+
+                        🔧 Tools & Spares
+
+                    </h6>
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small>
+
+                            {{ tool_completed }}/{{ tool_total }}
+
+                        </small>
+
+                        <small>
+
+                            {{ tool_progress }}%
+
+                        </small>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar bg-dark" style="width: {{ tool_progress }}%;"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="row mb-5">
-        <div class="col-lg-3 mb-4">
-            <div class="card shadow h-100">
+
+    <!-- ===================================================== -->
+    <!-- PREPARATION CHECKLISTS -->
+    <!-- ===================================================== -->
+
+    <div class="row g-4">
+
+
+        <!-- ================================================= -->
+        <!-- VEHICLE CHECKS -->
+        <!-- ================================================= -->
+
+        <div class="col-lg-6">
+            <div class="card shadow h-100 checklist-card" id="vehicle-checks">
+
                 <div class="card-header bg-danger text-white">
-                    Selected Competition Vehicle
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <span class="fw-bold">
+                            🔧 Vehicle Checks
+                        </span>
+
+                        <span class="badge bg-light text-dark">
+                            {{ vehicle_completed }}/{{ vehicle_total }}
+                        </span>
+
+                    </div>
+
+                    <div class="section-progress">
+
+                        <div class="progress section-progress-bar">
+                            <div class="progress-bar bg-light" style="width: {{ vehicle_progress }}%;"></div>
+                        </div>
+
+                        <div class="section-progress-text">
+
+                            <span>{{ vehicle_progress }}% complete</span>
+
+                            <span>{{ vehicle_completed }} done · {{ vehicle_total }} total</span>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
                 <div class="card-body">
-                    {% if default_vehicle.vehicle_image %}
 
-                    <img src="{{ default_vehicle.vehicle_image.url }}" class="img-fluid rounded mb-3">
+                    {% if vehicle_checks %}
 
-                    {% endif %}
+                    {% for item in vehicle_checks %}
 
-                    {% if default_vehicle %}
+                    <div class="checklist-item {% if item.completed %}completed{% endif %}">
 
-                    <h3>{{ default_vehicle.nickname }}</h3>
+                        <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
 
-                    <p>{{ default_vehicle.make }} {{ default_vehicle.model }}</p>
+                            {% csrf_token %}
 
-                    <p>{{ default_vehicle.registration }}</p>
+                            <input type="hidden" name="section" value="vehicle-checks">
 
-                    <span class="badge bg-success"> Default Vehicle </span>
+                            <label class="checklist-row">
+
+                                <input class="form-check-input" type="checkbox"
+                                    {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+
+                                <span class="checklist-label">
+                                    {{ item.item }}
+                                </span>
+
+                            </label>
+
+                        </form>
+
+                    </div>
+
+                    {% endfor %}
 
                     {% else %}
 
-                    <p>No default vehicle selected.</p>
+                    <div class="empty-checklist">
+                        <i class="bi bi-check-circle fs-3"></i>
+                        <p class="mb-0 mt-2">
+                            No vehicle checks available.
+                        </p>
+                    </div>
 
                     {% endif %}
+
                 </div>
+
             </div>
         </div>
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow border-0 h-100">
+
+
+        <!-- ================================================= -->
+        <!-- SAFETY -->
+        <!-- ================================================= -->
+
+        <div class="col-lg-6">
+            <div class="card shadow h-100 checklist-card" id="safety-checks">
 
                 <div class="card-header bg-success text-white">
+                
+                <div class="d-flex justify-content-between align-items-center">
 
-                    <h5 class="mb-0">
-                        <i class="bi bi-list-check"></i>
-                        Preparation Breakdown
-                    </h5>
+                    <span class="fw-bold">
+                        🦺 Safety Equipment
+                    </span>
 
+                    <span class="badge bg-light text-dark">
+                        {{ safety_completed }}/{{ safety_total }}
+                    </span>
+
+                </div>
+
+                <div class="section-progress">
+ 
+                        <div class="progress section-progress-bar">
+                            <div class="progress-bar bg-light" style="width: {{ safety_progress }}%;"></div>
+                        </div>
+ 
+                        <div class="section-progress-text">
+ 
+                            <span>{{ safety_progress }}% complete</span>
+ 
+                            <span>{{ safety_completed }} done · {{ safety_total }} total</span>
+ 
+                        </div>
+ 
+                    </div>
+ 
                 </div>
 
                 <div class="card-body">
 
-                    <div class="mb-3">
+                    {% if safety_checks %}
 
-                        <div class="d-flex justify-content-between">
-                            <span>Vehicle Checks</span>
-                            <strong>{{ vehicle_completed }}/{{ vehicle_total }}</strong>
-                        </div>
+                    {% for item in safety_checks %}
 
-                        <div class="progress">
-                            <div class="progress-bar bg-success" style="width: {{ vehicle_progress }}%;">
-                            </div>
-                        </div>
+                    <div class="checklist-item {% if item.completed %}completed{% endif %}">
 
+                        <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
+
+                            {% csrf_token %}
+
+                             <input type="hidden" name="section" value="safety-checks">
+ 
+                            <label class="checklist-row">
+ 
+                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
+                                    onchange="this.form.submit();">
+ 
+                                <span class="checklist-label">
+                                    {{ item.item }}
+                                </span>
+ 
+                            </label>
+ 
+                        </form>
+ 
                     </div>
-
-                    <div class="mb-3">
-
-                        <div class="d-flex justify-content-between">
-                            <span>Safety Equipment</span>
-                            <strong>{{ safety_completed }}/{{ safety_total }}</strong>
-                        </div>
-
-                        <div class="progress">
-                            <div class="progress-bar bg-warning" style="width: {{ safety_progress }}%;">
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <div class="d-flex justify-content-between">
-                            <span>Documents</span>
-                            <strong>{{ document_completed }}/{{ document_total }}</strong>
-                        </div>
-
-                        <div class="progress">
-                            <div class="progress-bar bg-info" style="width: {{ document_progress }}%;">
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div>
-
-                        <div class="d-flex justify-content-between">
-                            <span>Tools & Spares</span>
-                            <strong>{{ tool_completed }}/{{ tool_total }}</strong>
-                        </div>
-
-                        <div class="progress">
-                            <div class="progress-bar bg-dark" style="width: {{ tool_progress }}%;">
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <div class="col-lg-3 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header bg-primary text-white">Event Status</div>
-
-                <div class="card-body">
-                    {% if active_event %}
-
-                    <div class="alert alert-success">
-
-                        <h5>🏁 Current Event</h5>
-
-                        <strong>{{ active_event.title }}</strong><br>
-
-                        {{ active_event.event_type }}<br>
-
-                        {{ active_event.event_date|date:"d F Y" }}
-
-                    </div>
-
+ 
+                    {% endfor %}
+ 
                     {% else %}
-
-                    <div class="alert alert-secondary">
-
-                        No Event Selected
-
+ 
+                    <div class="empty-checklist">
+                        <i class="bi bi-shield-check fs-3"></i>
+                        <p class="mb-0 mt-2">
+                            No safety checks available.
+                        </p>
                     </div>
-
+ 
                     {% endif %}
-
-                    <p class="text-muted">Select an event to begin preparation.</p>
+ 
                 </div>
+ 
             </div>
         </div>
+ 
+ 
+        <!-- ================================================= -->
+        <!-- DOCUMENTS -->
+        <!-- ================================================= -->
+ 
+        <div class="col-lg-6">
+            <div class="card shadow h-100 checklist-card" id="document-checks">
+ 
+                <div class="card-header bg-primary text-white">
+ 
+                    <div class="d-flex justify-content-between align-items-center">
+ 
+                        <span class="fw-bold">
+                            📄 Documents
+                        </span>
+ 
+                        <span class="badge bg-light text-dark">
+                            {{ document_completed }}/{{ document_total }}
+                        </span>
+ 
+                    </div>
+ 
+                    <div class="section-progress">
+ 
+                        <div class="progress section-progress-bar">
+                            <div class="progress-bar bg-light" style="width: {{ document_progress }}%;"></div>
+                        </div>
+ 
+                        <div class="section-progress-text">
+ 
+                            <span>{{ document_progress }}% complete</span>
+ 
+                            <span>{{ document_completed }} done · {{ document_total }} total</span>
+ 
+                        </div>
+ 
+                    </div>
+ 
+                </div>
+ 
+                <div class="card-body">
+ 
+                    {% if document_checks %}
+ 
+                    {% for item in document_checks %}
+ 
+                    <div class="checklist-item {% if item.completed %}completed{% endif %}">
+ 
+                        <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
+ 
+                            {% csrf_token %}
+ 
+                            <input type="hidden" name="section" value="document-checks">
+ 
+                            <label class="checklist-row">
+ 
+                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
+                                    onchange="this.form.submit();">
+ 
+                                <span class="checklist-label">
+                                    {{ item.item }}
+                                </span>
+ 
+                            </label>
+ 
+                        </form>
+ 
+                    </div>
+ 
+                    {% endfor %}
+ 
+                    {% else %}
+ 
+                    <div class="empty-checklist">
+                        <i class="bi bi-file-earmark-check fs-3"></i>
+                        <p class="mb-0 mt-2">
+                            No document checks available.
+                        </p>
+                    </div>
+ 
+                    {% endif %}
+ 
+                </div>
+ 
+            </div>
+        </div>
+ 
+ 
+        <!-- ================================================= -->
+        <!-- TOOLS -->
+        <!-- ================================================= -->
+ 
+        <div class="col-lg-6">
+            <div class="card shadow h-100 checklist-card" id="tool-checks">
+ 
+                <div class="card-header bg-warning text-dark">
+ 
+                    <div class="d-flex justify-content-between align-items-center">
+ 
+                        <span class="fw-bold">
+                            🧰 Tools & Spares
+                        </span>
+ 
+                        <span class="badge bg-light text-dark">
+                            {{ tool_completed }}/{{ tool_total }}
+                        </span>
+ 
+                    </div>
+ 
+                    <div class="section-progress">
+ 
+                        <div class="progress section-progress-bar">
+                            <div class="progress-bar bg-dark" style="width: {{ tool_progress }}%;"></div>
+                        </div>
+ 
+                        <div class="section-progress-text">
+ 
+                            <span>{{ tool_progress }}% complete</span>
+ 
+                            <span>{{ tool_completed }} done · {{ tool_total }} total</span>
+ 
+                        </div>
+ 
+                    </div>
+ 
+                </div>
+ 
+                <div class="card-body">
+ 
+                    {% if tool_checks %}
+ 
+                    {% for item in tool_checks %}
+ 
+                    <div class="checklist-item {% if item.completed %}completed{% endif %}">
+ 
+                        <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
+ 
+                            {% csrf_token %}
+ 
+                            <input type="hidden" name="section" value="tool-checks">
+ 
+                            <label class="checklist-row">
+ 
+                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
+                                    onchange="this.form.submit();">
+ 
+                                <span class="checklist-label">
+                                    {{ item.item }}
+                                </span>
+ 
+                            </label>
+ 
+                        </form>
+ 
+                    </div>
+ 
+                    {% endfor %}
+ 
+                    {% else %}
+ 
+                    <div class="empty-checklist">
+                        <i class="bi bi-tools fs-3"></i>
+                        <p class="mb-0 mt-2">
+                            No tool checks available.
+                        </p>
+                    </div>
+ 
+                    {% endif %}
+ 
+                </div>
+ 
+            </div>
+        </div>
+ 
     </div>
+ 
+ 
+    <!-- ===================================================== -->
+    <!-- FOOTER -->
+    <!-- ===================================================== -->
+ 
+    <hr class="mt-5">
+ 
+    <div class="text-center text-muted small py-4">
+ 
+        <strong>Motorsport Navigator</strong>
+ 
+        <br>
+ 
+        Preparation Module Version 1.0
+ 
+        <br>
+ 
+        Built with Django & Bootstrap
+ 
+    </div>
+ 
+    {% endif %}
+ 
 </div>
-
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card mb-4 shadow h-100" id="vehicle-checks">
-            <div class="card-header bg-danger text-white d-flex justify-content-between">
-                <span>
-                    🔧 Vehicle Checks
-                </span>
-                <span class="badge bg-light text-dark">
-
-                    {{ vehicle_completed }}/{{ vehicle_total }}
-
-                </span>
-            </div>
-
-            <div class="card-body">
-                {% for item in vehicle_checks %}
-
-                <div class="form-check mb-2">
-                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
-
-                        {% csrf_token %}
-                        <input type="hidden" name="section" value="vehicle-checks">
-                        <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                            onchange="this.form.submit();">
-
-                    </form>
-
-                    <label class="form-check-label"> {{ item.item }} </label>
-                </div>
-
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="card mb-4 shadow h-100" id="safety-checks">
-            <div class="card-header bg-success text-white d-flex justify-content-between">
-                <span>
-                    🦺 Safety Equipment
-                </span>
-                <span class="badge bg-light text-dark">
-                    {{ safety_completed }}/{{ safety_total }}
-                </span>
-            </div>
-
-            <div class="card-body">
-                {% for item in safety_checks %}
-
-                <div class="form-check mb-2">
-                    <form action="{% url 'preparation:toggle_check' item.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="section" value="safety-checks">
-                        <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                            onchange="this.form.submit();">
-                    </form>
-
-                    <label class="form-check-label"> {{ item.item }} </label>
-                </div>
-
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="card mb-4 shadow h-100" id="document-checks">
-            <div class="card-header bg-primary text-white d-flex justify-content-between">
-                <span>
-                    📄 Documents
-                </span>
-                <span class="badge bg-light text-dark">
-                    {{ document_completed }}/{{ document_total }}
-                </span>
-            </div>
-
-            <div class="card-body">
-                {% for item in document_checks %}
-                <div class="form-check mb-2">
-                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="section" value="document-checks">
-                        <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                            onchange="this.form.submit();">
-                    </form>
-
-                    <label class="form-check-label"> {{ item.item }} </label>
-                </div>
-
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="card shadow mb-4 h-100" id="tool-checks">
-            <div class="card-header bg-warning text-dark d-flex justify-content-between">
-                <span>
-                    🧰 Tools & Spares
-                </span>
-                <span class="badge bg-light text-dark">
-                    {{ tool_completed }}/{{ tool_total }}
-                </span>
-            </div>
-
-            <div class="card-body">
-                {% for item in tool_checks %}
-
-                <div class="form-check mb-2">
-                    <form method="post" action="{% url 'preparation:toggle_check' item.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="section" value="tool-checks">
-                        <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                            onchange="this.form.submit();">
-                    </form>
-                    <label class="form-check-label"> {{ item.item }} </label>
-                </div>
-
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-<hr class="mt-5">
-
-<div class="text-center text-muted small py-4">
-
-    <strong>Motorsport Navigator</strong>
-
-    <br>
-
-    Preparation Module Version 1.0
-
-    <br>
-
-    Built with Django & Bootstrap
-
-</div>
+ 
 {% endblock %}

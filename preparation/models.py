@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from events.models import Event
+
 # Create your models here.
 class PreparationItem(models.Model):
 
@@ -15,6 +17,14 @@ class PreparationItem(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="preparation_items",
+        null=True,
+        blank=True,
+     )
 
     vehicle = models.ForeignKey(
         "garage.Vehicle",

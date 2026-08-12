@@ -46,32 +46,26 @@ def events(request):
 
     for event in events:
 
-        if event.vehicle:
+        total = PreparationItem.objects.filter(
+            user=request.user,
+            event=event,
+        ).count()
 
-            total = PreparationItem.objects.filter(
-                user=request.user,
-                vehicle=event.vehicle,
-            ).count()
+        completed = PreparationItem.objects.filter(
+            user=request.user,
+            event=event,
+            completed=True,
+        ).count()
 
-            completed = PreparationItem.objects.filter(
-                user=request.user,
-                vehicle=event.vehicle,
-                completed=True,
-            ).count()
-
-            if total:
-                event.progress = round((completed / total) * 100)
-            else:
-                event.progress = 0
-
-            event.completed_checks = completed
-            event.total_checks = total
-
+        if total:
+            event.progress = round(
+                (completed / total) * 100
+            )
         else:
-
             event.progress = 0
-            event.completed_checks = 0
-            event.total_checks = 0
+
+        event.completed_checks = completed
+        event.total_checks = total
 
     return render(
         request,
@@ -130,6 +124,27 @@ def add_event(request):
 
 @login_required
 def select_event(request, event_id):
+
+    Event.objects.filter(
+        user=request.user,
+        selected=True,
+    ).update(selected=False)
+
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    event.selected = True
+    event.save()
+
+    next_page = request.GET.get("next")
+
+    if next_page == "preparation":
+        return redirect("preparation:preparation")
+
+    return redirect("events:events")
 
     Event.objects.filter(
         user=request.user,
