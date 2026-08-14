@@ -178,7 +178,12 @@
                             {% endif %}
                             <h5 class="mb-0">
 
-                                🏁 {{ event.title }}
+                                🏁
+
+                                <a href="{% url 'events:event_detail' event.id %}"
+                                    class="text-white text-decoration-none">
+                                    {{ event.title }}
+                                </a>
 
                             </h5>
 
@@ -386,6 +391,11 @@
 
                         <div class="card-footer">
                             <div class="d-grid gap-2">
+
+                                <a href="{% url 'events:event_detail' event.id %}" class="btn btn-primary">
+                                    👁 View Event
+                                </a>
+
                                 {% if not event.selected %}
 
                                 <a href="{% url 'events:select_event' event.id %}" class="btn btn-success">
@@ -398,11 +408,12 @@
 
                                 {% endif %}
 
-                                <a href="{% url 'events:select_event' event.id %}?next=preparation"
+                                <a href="{% url 'preparation:event_preparation' event.id %}?next=preparation"
                                     class="btn btn-primary">
                                     <i class="bi bi-tools"></i>
                                     Prepare Event
                                 </a>
+
 
                                 <a href="{% url 'events:edit_event' event.id %}" class="btn btn-outline-primary">
                                     ✏ Edit Event

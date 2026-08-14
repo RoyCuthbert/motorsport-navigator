@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event
+from .models import Event, EventTask
 
 # Register your models here.
 @admin.register(Event)
@@ -24,3 +24,25 @@ class EventAdmin(admin.ModelAdmin):
         "venue",
         "organiser",
     )
+
+    @admin.register(EventTask)
+    class EventTaskAdmin(admin.ModelAdmin):
+
+        list_display = (
+            "title",
+            "event",
+            "category",
+            "completed",
+            "due_date",
+        )
+
+        list_filter = (
+            "category",
+            "completed",
+            "event",
+        )
+
+        search_fields = (
+            "title",
+            "event__title",
+        )

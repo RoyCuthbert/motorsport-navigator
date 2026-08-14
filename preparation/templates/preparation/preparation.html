@@ -73,16 +73,10 @@
                         </option>
 
                         {% for event in events %}
-
-                        <option value="{% url 'events:select_event' event.id %}?next=preparation"
+                        <option value="{% url 'preparation:event_preparation' event.id %}"
                             {% if active_event and event.id == active_event.id %} selected {% endif %}>
-
-                            {{ event.title }}
-                            —
-                            {{ event.event_date|date:"d M Y" }}
-
+                            {{ event.title }} — {{ event.event_date|date:"d M Y" }}
                         </option>
-
                         {% endfor %}
 
                     </select>
@@ -730,35 +724,35 @@
             <div class="card shadow h-100 checklist-card" id="safety-checks">
 
                 <div class="card-header bg-success text-white">
-                
-                <div class="d-flex justify-content-between align-items-center">
 
-                    <span class="fw-bold">
-                        🦺 Safety Equipment
-                    </span>
+                    <div class="d-flex justify-content-between align-items-center">
 
-                    <span class="badge bg-light text-dark">
-                        {{ safety_completed }}/{{ safety_total }}
-                    </span>
+                        <span class="fw-bold">
+                            🦺 Safety Equipment
+                        </span>
 
-                </div>
+                        <span class="badge bg-light text-dark">
+                            {{ safety_completed }}/{{ safety_total }}
+                        </span>
 
-                <div class="section-progress">
- 
+                    </div>
+
+                    <div class="section-progress">
+
                         <div class="progress section-progress-bar">
                             <div class="progress-bar bg-light" style="width: {{ safety_progress }}%;"></div>
                         </div>
- 
+
                         <div class="section-progress-text">
- 
+
                             <span>{{ safety_progress }}% complete</span>
- 
+
                             <span>{{ safety_completed }} done · {{ safety_total }} total</span>
- 
+
                         </div>
- 
+
                     </div>
- 
+
                 </div>
 
                 <div class="card-body">
@@ -773,240 +767,240 @@
 
                             {% csrf_token %}
 
-                             <input type="hidden" name="section" value="safety-checks">
- 
+                            <input type="hidden" name="section" value="safety-checks">
+
                             <label class="checklist-row">
- 
-                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                                    onchange="this.form.submit();">
- 
+
+                                <input class="form-check-input" type="checkbox"
+                                    {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+
                                 <span class="checklist-label">
                                     {{ item.item }}
                                 </span>
- 
+
                             </label>
- 
+
                         </form>
- 
+
                     </div>
- 
+
                     {% endfor %}
- 
+
                     {% else %}
- 
+
                     <div class="empty-checklist">
                         <i class="bi bi-shield-check fs-3"></i>
                         <p class="mb-0 mt-2">
                             No safety checks available.
                         </p>
                     </div>
- 
+
                     {% endif %}
- 
+
                 </div>
- 
+
             </div>
         </div>
- 
- 
+
+
         <!-- ================================================= -->
         <!-- DOCUMENTS -->
         <!-- ================================================= -->
- 
+
         <div class="col-lg-6">
             <div class="card shadow h-100 checklist-card" id="document-checks">
- 
+
                 <div class="card-header bg-primary text-white">
- 
+
                     <div class="d-flex justify-content-between align-items-center">
- 
+
                         <span class="fw-bold">
                             📄 Documents
                         </span>
- 
+
                         <span class="badge bg-light text-dark">
                             {{ document_completed }}/{{ document_total }}
                         </span>
- 
+
                     </div>
- 
+
                     <div class="section-progress">
- 
+
                         <div class="progress section-progress-bar">
                             <div class="progress-bar bg-light" style="width: {{ document_progress }}%;"></div>
                         </div>
- 
+
                         <div class="section-progress-text">
- 
+
                             <span>{{ document_progress }}% complete</span>
- 
+
                             <span>{{ document_completed }} done · {{ document_total }} total</span>
- 
+
                         </div>
- 
+
                     </div>
- 
+
                 </div>
- 
+
                 <div class="card-body">
- 
+
                     {% if document_checks %}
- 
+
                     {% for item in document_checks %}
- 
+
                     <div class="checklist-item {% if item.completed %}completed{% endif %}">
- 
+
                         <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
- 
+
                             {% csrf_token %}
- 
+
                             <input type="hidden" name="section" value="document-checks">
- 
+
                             <label class="checklist-row">
- 
-                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                                    onchange="this.form.submit();">
- 
+
+                                <input class="form-check-input" type="checkbox"
+                                    {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+
                                 <span class="checklist-label">
                                     {{ item.item }}
                                 </span>
- 
+
                             </label>
- 
+
                         </form>
- 
+
                     </div>
- 
+
                     {% endfor %}
- 
+
                     {% else %}
- 
+
                     <div class="empty-checklist">
                         <i class="bi bi-file-earmark-check fs-3"></i>
                         <p class="mb-0 mt-2">
                             No document checks available.
                         </p>
                     </div>
- 
+
                     {% endif %}
- 
+
                 </div>
- 
+
             </div>
         </div>
- 
- 
+
+
         <!-- ================================================= -->
         <!-- TOOLS -->
         <!-- ================================================= -->
- 
+
         <div class="col-lg-6">
             <div class="card shadow h-100 checklist-card" id="tool-checks">
- 
+
                 <div class="card-header bg-warning text-dark">
- 
+
                     <div class="d-flex justify-content-between align-items-center">
- 
+
                         <span class="fw-bold">
                             🧰 Tools & Spares
                         </span>
- 
+
                         <span class="badge bg-light text-dark">
                             {{ tool_completed }}/{{ tool_total }}
                         </span>
- 
+
                     </div>
- 
+
                     <div class="section-progress">
- 
+
                         <div class="progress section-progress-bar">
                             <div class="progress-bar bg-dark" style="width: {{ tool_progress }}%;"></div>
                         </div>
- 
+
                         <div class="section-progress-text">
- 
+
                             <span>{{ tool_progress }}% complete</span>
- 
+
                             <span>{{ tool_completed }} done · {{ tool_total }} total</span>
- 
+
                         </div>
- 
+
                     </div>
- 
+
                 </div>
- 
+
                 <div class="card-body">
- 
+
                     {% if tool_checks %}
- 
+
                     {% for item in tool_checks %}
- 
+
                     <div class="checklist-item {% if item.completed %}completed{% endif %}">
- 
+
                         <form method="post" action="{% url 'preparation:toggle_check' item.id %}">
- 
+
                             {% csrf_token %}
- 
+
                             <input type="hidden" name="section" value="tool-checks">
- 
+
                             <label class="checklist-row">
- 
-                                <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %}
-                                    onchange="this.form.submit();">
- 
+
+                                <input class="form-check-input" type="checkbox"
+                                    {% if item.completed %}checked{% endif %} onchange="this.form.submit();">
+
                                 <span class="checklist-label">
                                     {{ item.item }}
                                 </span>
- 
+
                             </label>
- 
+
                         </form>
- 
+
                     </div>
- 
+
                     {% endfor %}
- 
+
                     {% else %}
- 
+
                     <div class="empty-checklist">
                         <i class="bi bi-tools fs-3"></i>
                         <p class="mb-0 mt-2">
                             No tool checks available.
                         </p>
                     </div>
- 
+
                     {% endif %}
- 
+
                 </div>
- 
+
             </div>
         </div>
- 
+
     </div>
- 
- 
+
+
     <!-- ===================================================== -->
     <!-- FOOTER -->
     <!-- ===================================================== -->
- 
+
     <hr class="mt-5">
- 
+
     <div class="text-center text-muted small py-4">
- 
+
         <strong>Motorsport Navigator</strong>
- 
+
         <br>
- 
+
         Preparation Module Version 1.0
- 
+
         <br>
- 
+
         Built with Django & Bootstrap
- 
+
     </div>
- 
+
     {% endif %}
- 
+
 </div>
- 
+
 {% endblock %}

@@ -1,0 +1,673 @@
+{% extends "base.html" %}
+{% block title %}
+Season Dashboard | Motorsport Navigator
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ==========================================
+         HEADER
+         ========================================== -->
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="fw-bold mb-1">
+                🏁 Season Dashboard
+            </h1>
+
+            <p class="text-muted mb-0">
+                Your events, vehicles and preparation at a glance.
+            </p>
+
+        </div>
+
+        <div class="mt-3 mt-md-0">
+
+            <a href="{% url 'events:add_event' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Event
+            </a>
+
+            <a href="{% url 'events:season_calendar' %}" class="btn btn-outline-primary">
+                <i class="bi bi-calendar3"></i>
+                Season Calendar
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         VEHICLE FILTER
+         ========================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <form method="GET" class="row align-items-end g-3">
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Filter by Competition Vehicle
+                    </label>
+
+                    <select name="vehicle" class="form-select">
+
+                        <option value="">
+                            All Vehicles
+                        </option>
+
+                        {% for vehicle in vehicles %}
+
+                        <option value="{{ vehicle.id }}" {% if selected_vehicle == vehicle.id|stringformat:"s" %}
+                            selected {% endif %}>
+                            {{ vehicle.nickname }}
+                            —
+                            {{ vehicle.make }}
+                            {{ vehicle.model }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-auto">
+
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-filter"></i>
+                        Apply Filter
+                    </button>
+
+                </div>
+
+                {% if selected_vehicle %}
+
+                <div class="col-md-auto">
+
+                    <a href="{% url 'events:season_dashboard' %}" class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+    <!-- ==========================================
+     NEXT EVENT
+     ========================================== -->
+
+    {% if next_event %}
+
+    <div class="card border-0 shadow-sm mb-4 next-event-card">
+
+        <div class="card-header bg-success text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <strong>
+                    🏁 NEXT EVENT
+                </strong>
+
+                <span class="badge bg-light text-success">
+                    {{ next_event_days }} days to go
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row align-items-center g-4">
+
+                <!-- EVENT INFORMATION -->
+
+                <div class="col-lg-5">
+
+                    <h3 class="fw-bold mb-1">
+                        {{ next_event.title }}
+                    </h3>
+
+                    <p class="text-muted mb-3">
+
+                        📅
+                        {{ next_event.event_date|date:"d F Y" }}
+
+                    </p>
+
+
+                    {% if next_event.vehicle %}
+
+                    <div class="mb-2">
+
+                        🚗
+
+                        <strong>
+                            {{ next_event.vehicle.nickname }}
+                        </strong>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        {{ next_event.vehicle.make }}
+                        {{ next_event.vehicle.model }}
+
+                    </small>
+
+                    {% else %}
+
+                    <div class="alert alert-warning py-2 mb-0">
+
+                        ⚠ No competition vehicle assigned
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- PREPARATION -->
+
+                <div class="col-lg-3">
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small class="fw-semibold">
+                            🔧 Preparation
+                        </small>
+
+                        <small>
+                            {{ next_event.preparation_progress }}%
+                        </small>
+
+                    </div>
+
+                    <div class="progress mb-2" style="height: 9px;">
+
+                        <div class="progress-bar bg-success" style="width: {{ next_event.preparation_progress }}%;">
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        {{ next_event.completed_checks }}
+                        /
+                        {{ next_event.total_checks }}
+
+                        checks completed
+
+                    </small>
+
+                </div>
+
+
+                <!-- TASKS -->
+
+                <div class="col-lg-3">
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <small class="fw-semibold">
+                            📋 Event Tasks
+                        </small>
+
+                        <small>
+                            {{ next_event.task_progress }}%
+                        </small>
+
+                    </div>
+
+                    <div class="progress mb-2" style="height: 9px;">
+
+                        <div class="progress-bar bg-primary" style="width: {{ next_event.task_progress }}%;"></div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        {{ next_event.completed_tasks }}
+                        /
+                        {{ next_event.total_tasks }}
+
+                        tasks completed
+
+                    </small>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="col-12">
+
+                    <div class="d-flex flex-wrap gap-2">
+
+                        <a href="{% url 'events:event_detail' next_event.id %}" class="btn btn-dark">
+                            <i class="bi bi-speedometer2"></i>
+                            Open Event Hub
+                        </a>
+
+
+                        {% if next_event.vehicle %}
+
+                        <a href="{% url 'preparation:event_preparation' next_event.id %}"
+                            class="btn btn-outline-success">
+                            <i class="bi bi-tools"></i>
+                            Open Preparation
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body text-center py-4">
+
+            <div class="display-6 mb-2">
+                🏁
+            </div>
+
+            <h4 class="fw-bold">
+                No Upcoming Events
+            </h4>
+
+            <p class="text-muted mb-3">
+                Add your next motorsport event to start planning your season.
+            </p>
+
+            <a href="{% url 'events:add_event' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Event
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- ==========================================
+         STATISTICS
+         ========================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Total Events
+                    </small>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ total_events }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Upcoming
+                    </small>
+
+                    <h2 class="fw-bold text-primary mb-0">
+                        {{ upcoming_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Completed
+                    </small>
+
+                    <h2 class="fw-bold text-success mb-0">
+                        {{ completed_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Cancelled
+                    </small>
+
+                    <h2 class="fw-bold text-danger mb-0">
+                        {{ cancelled_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         SEASON PROGRESS
+         ========================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>
+                            🔧 Preparation
+                        </strong>
+
+                        <strong>
+                            {{ preparation_progress }}%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mt-2" style="height: 10px;">
+
+                        <div class="progress-bar bg-success" style="width: {{ preparation_progress }}%;"></div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        {{ completed_preparation }}
+                        of
+                        {{ total_preparation }}
+                        checks completed
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>
+                            📋 Event Tasks
+                        </strong>
+
+                        <strong>
+                            {{ task_progress }}%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mt-2" style="height: 10px;">
+
+                        <div class="progress-bar bg-primary" style="width: {{ task_progress }}%;"></div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        {{ completed_tasks }}
+                        of
+                        {{ total_tasks }}
+                        tasks completed
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         EVENTS
+         ========================================== -->
+
+    <h3 class="fw-bold mb-3">
+        Your Events
+    </h3>
+
+
+    {% if events %}
+
+    <div class="row g-4">
+
+        {% for event in events %}
+
+        <div class="col-12 col-lg-6 col-xl-4">
+
+            <div class="card border-0 shadow-sm h-100 season-event-card">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+                                {{ event.title }}
+                            </h5>
+
+                            <small class="text-muted">
+
+                                {{ event.event_date|date:"d M Y" }}
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-{{ event.readiness_class }}">
+
+                            {{ event.readiness }}
+
+                        </span>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- VEHICLE -->
+
+                    {% if event.vehicle %}
+
+                    <p class="mb-3">
+
+                        🚗
+
+                        <strong>
+                            {{ event.vehicle.nickname }}
+                        </strong>
+
+                        <br>
+
+                        <small class="text-muted">
+
+                            {{ event.vehicle.make }}
+                            {{ event.vehicle.model }}
+
+                        </small>
+
+                    </p>
+
+                    {% else %}
+
+                    <div class="alert alert-warning py-2">
+
+                        ⚠ No competition vehicle assigned
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- PREPARATION -->
+
+                    <div class="mb-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <small class="fw-semibold">
+                                Preparation
+                            </small>
+
+                            <small>
+                                {{ event.preparation_progress }}%
+                            </small>
+
+                        </div>
+
+                        <div class="progress" style="height: 7px;">
+
+                            <div class="progress-bar bg-success" style="width: {{ event.preparation_progress }}%;">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TASKS -->
+
+                    <div class="mb-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <small class="fw-semibold">
+                                Event Tasks
+                            </small>
+
+                            <small>
+                                {{ event.task_progress }}%
+                            </small>
+
+                        </div>
+
+                        <div class="progress" style="height: 7px;">
+
+                            <div class="progress-bar bg-primary" style="width: {{ event.task_progress }}%;"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTION -->
+
+                    <a href="{% url 'events:event_detail' event.id %}" class="btn btn-outline-dark w-100">
+                        Open Event Hub
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center py-5">
+
+        <i class="bi bi-calendar-x display-4 text-muted"></i>
+
+        <h4 class="mt-3">
+            No events found
+        </h4>
+
+        <p class="text-muted">
+            Add your first motorsport event to get started.
+        </p>
+
+        <a href="{% url 'events:add_event' %}" class="btn btn-primary">
+            Add Event
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

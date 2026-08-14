@@ -1,5 +1,6 @@
 from .models import PreparationItem
 
+
 DEFAULT_CHECKLIST = {
 
     "Vehicle": [
@@ -61,22 +62,30 @@ DEFAULT_CHECKLIST = {
 }
 
 
-
-
 def create_default_checklist(user, event):
 
-    # An event must have a competition vehicle
+    # -----------------------------------------
+    # EVENT MUST HAVE A COMPETITION VEHICLE
+    # -----------------------------------------
+
     if not event.vehicle:
         return
 
-    # Don't create duplicate preparation items
+    # -----------------------------------------
+    # DON'T CREATE DUPLICATE CHECKLISTS
+    # -----------------------------------------
+
     if PreparationItem.objects.filter(
         user=user,
         event=event,
     ).exists():
         return
 
-    # Create a fresh checklist for this event
+    # -----------------------------------------
+    # CREATE CHECKLIST FOR THIS EVENT
+    # AND ITS ASSIGNED COMPETITION VEHICLE
+    # -----------------------------------------
+
     for category, items in DEFAULT_CHECKLIST.items():
 
         for item in items:

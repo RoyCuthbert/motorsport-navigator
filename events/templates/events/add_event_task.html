@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Add Task | {{ event.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-7">
+
+        <div class="mb-4">
+
+            <a
+                href="{% url 'events:event_detail' event.id %}"
+                class="text-decoration-none"
+            >
+                ← Back to Event
+            </a>
+
+        </div>
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-dark text-white">
+
+                <h4 class="mb-0">
+                    📋 Add Event Task
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <p class="text-muted">
+                    Add a task specifically for
+                    <strong>{{ event.title }}</strong>.
+                </p>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    {{ form.non_field_errors }}
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Task
+                        </label>
+
+                        {{ form.title }}
+
+                        {{ form.title.errors }}
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Category
+                        </label>
+
+                        {{ form.category }}
+
+                        {{ form.category.errors }}
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Due Date
+                        </label>
+
+                        {{ form.due_date }}
+
+                        {{ form.due_date.errors }}
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Notes
+                        </label>
+
+                        {{ form.notes }}
+
+                        {{ form.notes.errors }}
+
+                    </div>
+
+                    <div class="d-grid gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success btn-lg"
+                        >
+                            <i class="bi bi-check-circle"></i>
+                            Add Task
+                        </button>
+
+                        <a
+                            href="{% url 'events:event_detail' event.id %}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

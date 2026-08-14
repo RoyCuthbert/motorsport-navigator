@@ -3,29 +3,49 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-
 from .models import PreparationItem
 from .checklist import create_default_checklist
 from events.models import Event
 
-from garage.models import Vehicle
 
-# Create your views here.
+# ==========================================
+# PREPARATION CENTRE
+# ==========================================
+
 @login_required
-def preparation(request):
+def preparation(request, event_id=None):
 
-    # Get the currently selected event
-    active_event = Event.objects.filter(
-        user=request.user,
-        selected=True,
-    ).first()
+    # -----------------------------------------
+    # DETERMINE WHICH EVENT WE ARE PREPARING
+    # -----------------------------------------
 
-    # All user's events for the event selector
+    if event_id:
+
+        active_event = get_object_or_404(
+            Event,
+            id=event_id,
+            user=request.user,
+        )
+
+    else:
+
+        active_event = Event.objects.filter(
+            user=request.user,
+            selected=True,
+        ).first()
+
+    # -----------------------------------------
+    # ALL USER EVENTS
+    # -----------------------------------------
+
     events = Event.objects.filter(
         user=request.user,
     ).order_by("event_date")
 
-    # Default values
+    # -----------------------------------------
+    # DEFAULT VALUES
+    # -----------------------------------------
+
     current_vehicle = None
 
     vehicle_checks = []
@@ -33,12 +53,16 @@ def preparation(request):
     document_checks = []
     tool_checks = []
 
-    # If an event is selected and has a vehicle
+    # -----------------------------------------
+    # EVENT VEHICLE & CHECKLIST
+    # -----------------------------------------
+
     if active_event and active_event.vehicle:
 
         current_vehicle = active_event.vehicle
 
-        # Create the checklist for THIS EVENT
+        # Create checklist specifically for
+        # this event and this competition vehicle
         create_default_checklist(
             request.user,
             active_event,
@@ -68,75 +92,107 @@ def preparation(request):
             category="Tools",
         )
 
-    # Overall progress
-    total_checks = PreparationItem.objects.filter(
-        user=request.user,
-        event=active_event,
-    ).count()
+    # -----------------------------------------
+    # OVERALL PROGRESS
+    # -----------------------------------------
 
-    completed_checks = PreparationItem.objects.filter(
-        user=request.user,
-        event=active_event,
-        completed=True,
-    ).count()
+    if active_event:
+
+        total_checks = PreparationItem.objects.filter(
+            user=request.user,
+            event=active_event,
+        ).count()
+
+        completed_checks = PreparationItem.objects.filter(
+            user=request.user,
+            event=active_event,
+            completed=True,
+        ).count()
+
+    else:
+
+        total_checks = 0
+        completed_checks = 0
 
     if total_checks:
+
         progress = round(
             (completed_checks / total_checks) * 100
         )
+
     else:
+
         progress = 0
 
     checks_remaining = total_checks - completed_checks
 
-    # Section totals
+    # -----------------------------------------
+    # SECTION TOTALS
+    # -----------------------------------------
+
     vehicle_total = vehicle_checks.count()
+
     vehicle_completed = vehicle_checks.filter(
         completed=True
     ).count()
 
     safety_total = safety_checks.count()
+
     safety_completed = safety_checks.filter(
         completed=True
     ).count()
 
     document_total = document_checks.count()
+
     document_completed = document_checks.filter(
         completed=True
     ).count()
 
     tool_total = tool_checks.count()
+
     tool_completed = tool_checks.filter(
         completed=True
     ).count()
 
-    # Section progress
+    # -----------------------------------------
+    # SECTION PROGRESS
+    # -----------------------------------------
+
     vehicle_progress = (
         round(vehicle_completed / vehicle_total * 100)
-        if vehicle_total else 0
+        if vehicle_total
+        else 0
     )
 
     safety_progress = (
         round(safety_completed / safety_total * 100)
-        if safety_total else 0
+        if safety_total
+        else 0
     )
 
     document_progress = (
         round(document_completed / document_total * 100)
-        if document_total else 0
+        if document_total
+        else 0
     )
 
     tool_progress = (
         round(tool_completed / tool_total * 100)
-        if tool_total else 0
+        if tool_total
+        else 0
     )
+
+    # -----------------------------------------
+    # RENDER
+    # -----------------------------------------
 
     return render(
         request,
         "preparation/preparation.html",
         {
             "active_event": active_event,
-            "events":events,
+            "events": events,
+
             "current_vehicle": current_vehicle,
 
             "vehicle_checks": vehicle_checks,
@@ -167,6 +223,11 @@ def preparation(request):
         },
     )
 
+
+# ==========================================
+# TOGGLE CHECKLIST ITEM
+# ==========================================
+
 @require_POST
 @login_required
 def toggle_check(request, item_id):
@@ -180,7 +241,28 @@ def toggle_check(request, item_id):
     item.completed = not item.completed
     item.save()
 
-    section = request.POST.get("section", "vehicle-checks")
+    section = request.POST.get(
+        "section",
+        "vehicle-checks",
+    )
 
-    url = reverse("preparation:preparation")
-    return redirect(f"{url}#{section}")
+    # -----------------------------------------
+    # RETURN TO THE SAME EVENT
+    # -----------------------------------------
+
+    if item.event_id:
+
+        url = reverse(
+            "preparation:event_preparation",
+            args=[item.event_id],
+        )
+
+    else:
+
+        url = reverse(
+            "preparation:preparation",
+        )
+
+    return redirect(
+        f"{url}#{section}"
+    )

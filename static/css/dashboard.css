@@ -1,0 +1,62 @@
+/* ==========================================
+   SEASON DASHBOARD
+   ========================================== */
+
+.next-event-card {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.next-event-card .card-header {
+    padding: 12px 18px;
+}
+
+.next-event-card .card-body {
+    padding: 20px;
+}
+
+
+/* ==========================================
+   DASHBOARD EVENT CARDS
+   ========================================== */
+
+.season-event-card {
+    border-radius: 12px;
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.season-event-card:hover {
+    transform: translateY(-3px);
+}
+
+
+/* ==========================================
+   DASHBOARD PROGRESS
+   ========================================== */
+
+.season-progress {
+    height: 8px;
+    border-radius: 999px;
+}
+
+.season-progress .progress-bar {
+    border-radius: 999px;
+}
+
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 576px) {
+
+    .next-event-card .card-body {
+        padding: 15px;
+    }
+
+    .next-event-card h3 {
+        font-size: 1.35rem;
+    }
+
+}

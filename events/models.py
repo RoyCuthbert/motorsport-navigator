@@ -87,3 +87,63 @@ class Event(models.Model):
     @property
     def days_remaining(self):
         return (self.event_date - date.today()).days
+
+class EventTask(models.Model):
+
+    CATEGORY_CHOICES = [
+        ("Entry", "Entry"),
+        ("Documents", "Documents"),
+        ("Travel", "Travel"),
+        ("Accommodation", "Accommodation"),
+        ("Vehicle", "Vehicle"),
+        ("Event", "Event"),
+        ("Other", "Other"),
+    ]
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="tasks",
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    title = models.CharField(
+        max_length=200,
+    )
+
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES,
+        default="Other",
+    )
+
+    completed = models.BooleanField(
+        default=False,
+    )
+
+    due_date = models.DateField(
+        blank=True,
+        null=True,
+    )
+
+    notes = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = [
+            "completed",
+            "due_date",
+            "created_at",
+        ]
+
+    def __str__(self):
+        return self.titlesw

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load event_extras %}
+
+{% block title %}
+    Season Calendar | Motorsport Navigator
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ==========================================
+         HEADER
+         ========================================== -->
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="fw-bold mb-1">
+                🏁 Season Calendar
+            </h1>
+
+            <p class="text-muted mb-0">
+                Your motorsport season at a glance.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'events:events' %}"
+            class="btn btn-outline-secondary mt-3 mt-md-0"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Events Centre
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         MONTH NAVIGATION
+         ========================================== -->
+
+    <div class="card border-0 shadow-sm mb-4 calendar-card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <a
+                    href="?year={{ previous_year }}&month={{ previous_month }}"
+                    class="btn btn-outline-primary"
+                >
+                    <i class="bi bi-chevron-left"></i>
+
+                    <span class="d-none d-sm-inline">
+                        Previous
+                    </span>
+                </a>
+
+
+                <div class="text-center">
+
+                    <h2 class="fw-bold mb-0">
+                        {{ month_name }}
+                        {{ calendar_year }}
+                    </h2>
+
+                </div>
+
+
+                <a
+                    href="?year={{ next_year }}&month={{ next_month }}"
+                    class="btn btn-outline-primary"
+                >
+
+                    <span class="d-none d-sm-inline">
+                        Next
+                    </span>
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         CALENDAR
+         ========================================== -->
+
+    <div class="card border-0 shadow-sm calendar-card">
+
+        <div class="card-body p-0">
+
+            <div class="season-calendar">
+
+                <!-- DAY HEADINGS -->
+
+                <div class="calendar-week calendar-header">
+
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+
+                </div>
+
+
+                <!-- WEEKS -->
+
+                {% for week in weeks %}
+
+                    <div class="calendar-week">
+
+                        {% for day in week %}
+
+                            <div
+                                class="
+                                    calendar-day
+                                    {% if day.month != calendar_month %}
+                                        other-month
+                                    {% endif %}
+                                    {% if day == today %}
+                                        today
+                                    {% endif %}
+                                "
+                            >
+
+                                <!-- DATE -->
+
+                                <div class="calendar-date">
+
+                                    {{ day.day }}
+
+                                </div>
+
+
+                                <!-- EVENTS -->
+
+                                {% for event in events_by_date|get_item:day %}
+
+                    
+
+                                    <a
+                                        href="{% url 'events:event_detail' event.id %}"
+                                        class="calendar-event
+                                        {% if event.status == 'Completed' %}
+                                            event-completed
+                                        {% elif event.status == 'Cancelled' %}
+                                            event-cancelled
+                                        {% else %}
+                                            event-upcoming
+                                        {% endif %}"
+                                    >
+
+                                        <strong>
+                                            {{ event.title }}
+                                        </strong>
+
+                                        {% if event.vehicle %}
+
+                                            <small>
+                                                🚗
+                                                {{ event.vehicle.nickname }}
+                                            </small>
+
+                                        {% endif %}
+
+                                    </a>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         LEGEND
+         ========================================== -->
+
+    <div class="d-flex flex-wrap gap-3 mt-3">
+
+        <span>
+            <span class="calendar-legend event-upcoming"></span>
+            Upcoming
+        </span>
+
+        <span>
+            <span class="calendar-legend event-completed"></span>
+            Completed
+        </span>
+
+        <span>
+            <span class="calendar-legend event-cancelled"></span>
+            Cancelled
+        </span>
+
+    </div>
+
+</div>
+
+{% endblock %}
