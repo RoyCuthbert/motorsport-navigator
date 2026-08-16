@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 import calendar
+from collections import defaultdict
 from datetime import date
 
 from preparation.models import PreparationItem
-from .models import Event, EventTask
+from .models import Event, EventTask, EVENT_TYPES 
 from garage.models import Vehicle
 from .forms import EventForm, EventTaskForm
 # Create your views here.
@@ -782,19 +783,16 @@ def season_calendar(request):
     today = date.today()
 
     # -----------------------------------------
-    # SELECT MONTH / YEAR
+    # SELECT MONTH
     # -----------------------------------------
 
     try:
         year = int(request.GET.get("year", today.year))
         month = int(request.GET.get("month", today.month))
-
     except (TypeError, ValueError):
-
         year = today.year
         month = today.month
 
-    # Keep month within valid range
     if month < 1:
         month = 12
         year -= 1
@@ -803,21 +801,42 @@ def season_calendar(request):
         month = 1
         year += 1
 
-    # -----------------------------------------
-    # CALENDAR
-    # -----------------------------------------
-
-    month_calendar = calendar.Calendar(
-        firstweekday=0
-    )
-
-    weeks = month_calendar.monthdatescalendar(
-        year,
-        month,
-    )
 
     # -----------------------------------------
-    # USER EVENTS
+    # FILTER VALUES
+    # -----------------------------------------
+
+    status_filter = request.GET.get("status", "").strip()
+    event_type_filter = request.GET.get("event_type", "").strip()
+    vehicle_id = request.GET.get("vehicle", "").strip()
+
+
+    # -----------------------------------------
+    # VEHICLES
+    # -----------------------------------------
+
+    vehicles = Vehicle.objects.filter(
+        owner=request.user
+    ).order_by("nickname")
+
+
+    selected_vehicle = None
+
+    if vehicle_id:
+
+        try:
+
+            selected_vehicle = vehicles.get(
+                id=vehicle_id
+            )
+
+        except Vehicle.DoesNotExist:
+
+            selected_vehicle = None
+
+
+    # -----------------------------------------
+    # EVENTS FOR MONTH
     # -----------------------------------------
 
     events = Event.objects.filter(
@@ -825,43 +844,163 @@ def season_calendar(request):
         event_date__year=year,
         event_date__month=month,
     ).select_related(
-        "vehicle"
+        "vehicle",
     ).order_by(
-        "event_date"
+        "event_date",
     )
+
+
+    # -----------------------------------------
+    # APPLY STATUS FILTER
+    # -----------------------------------------
+
+    if status_filter in {
+        "Upcoming",
+        "Completed",
+        "Cancelled",
+    }:
+
+        events = events.filter(
+            status=status_filter
+        )
+
+    else:
+
+        status_filter = ""
+
+
+    # -----------------------------------------
+    # APPLY RALLY TYPE FILTER
+    # -----------------------------------------
+
+    valid_event_types = {
+        value
+        for value, label in EVENT_TYPES
+    }
+
+
+    if event_type_filter in valid_event_types:
+
+        events = events.filter(
+            event_type=event_type_filter
+        )
+
+    else:
+
+        event_type_filter = ""
+
+
+    # -----------------------------------------
+    # APPLY VEHICLE FILTER
+    # -----------------------------------------
+
+    if selected_vehicle:
+
+        events = events.filter(
+            vehicle=selected_vehicle
+        )
+
 
     # -----------------------------------------
     # GROUP EVENTS BY DATE
     # -----------------------------------------
 
-    events_by_date = {}
+    events_by_date = defaultdict(list)
 
     for event in events:
 
-        events_by_date.setdefault(
-            event.event_date,
-            []
-        ).append(event)
+        events_by_date[
+            event.event_date
+        ].append(event)
+
 
     # -----------------------------------------
-    # MONTH NAVIGATION
+    # PREPARATION PROGRESS
     # -----------------------------------------
 
-    previous_month = month - 1
-    previous_year = year
+    for event in events:
 
-    if previous_month < 1:
+        preparation_checks = PreparationItem.objects.filter(
+            user=request.user,
+            event=event,
+        )
+
+        total_checks = preparation_checks.count()
+
+        completed_checks = preparation_checks.filter(
+            completed=True,
+        ).count()
+
+        event.total_checks = total_checks
+        event.completed_checks = completed_checks
+
+        if total_checks:
+
+            event.progress = round(
+                (completed_checks / total_checks) * 100
+            )
+
+        else:
+
+            event.progress = 0
+
+
+    # -----------------------------------------
+    # CALENDAR
+    # -----------------------------------------
+
+    calendar_obj = calendar.Calendar(
+        firstweekday=0
+    )
+
+    weeks = calendar_obj.monthdatescalendar(
+        year,
+        month,
+    )
+
+
+    # -----------------------------------------
+    # PREVIOUS MONTH
+    # -----------------------------------------
+
+    if month == 1:
 
         previous_month = 12
-        previous_year -= 1
+        previous_year = year - 1
 
-    next_month = month + 1
-    next_year = year
+    else:
 
-    if next_month > 12:
+        previous_month = month - 1
+        previous_year = year
+
+
+    # -----------------------------------------
+    # NEXT MONTH
+    # -----------------------------------------
+
+    if month == 12:
 
         next_month = 1
-        next_year += 1
+        next_year = year + 1
+
+    else:
+
+        next_month = month + 1
+        next_year = year
+
+
+    # -----------------------------------------
+    # MONTH NAME
+    # -----------------------------------------
+
+    month_name = calendar.month_name[
+        month
+    ]
+
+
+    # -----------------------------------------
+    # RENDER
+    # -----------------------------------------
 
     return render(
         request,
@@ -872,8 +1011,7 @@ def season_calendar(request):
 
             "calendar_year": year,
             "calendar_month": month,
-
-            "month_name": calendar.month_name[month],
+            "month_name": month_name,
 
             "previous_year": previous_year,
             "previous_month": previous_month,
@@ -882,5 +1020,15 @@ def season_calendar(request):
             "next_month": next_month,
 
             "today": today,
+
+            # Filters
+            "vehicles": vehicles,
+            "selected_vehicle": selected_vehicle,
+            "vehicle_id": vehicle_id,
+
+            "event_types": EVENT_TYPES,
+            "event_type_filter": event_type_filter,
+
+            "status_filter": status_filter,
         },
     )

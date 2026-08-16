@@ -146,4 +146,4 @@ class EventTask(models.Model):
         ]
 
     def __str__(self):
-        return self.titlesw
+        return self.title

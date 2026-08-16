@@ -1,221 +1,443 @@
 {% extends "base.html" %}
 
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+{% endblock %}
+
 {% load event_extras %}
 
 {% block title %}
-    Season Calendar | Motorsport Navigator
+Season Calendar | Motorsport Navigator
 {% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="season-calendar-page">
 
-    <!-- ==========================================
-         HEADER
-         ========================================== -->
-
+    <!-- HEADER -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
 
         <div>
-
             <h1 class="fw-bold mb-1">
                 🏁 Season Calendar
             </h1>
 
             <p class="text-muted mb-0">
-                Your motorsport season at a glance.
+                Your motorsport events at a glance.
             </p>
-
         </div>
 
-        <a
-            href="{% url 'events:events' %}"
-            class="btn btn-outline-secondary mt-3 mt-md-0"
-        >
-            <i class="bi bi-arrow-left"></i>
-            Events Centre
-        </a>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+
+            <a href="{% url 'events:events' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-list-ul"></i>
+                Events
+            </a>
+
+            <a href="{% url 'events:season_dashboard' %}" class="btn btn-outline-primary">
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </a>
+
+        </div>
 
     </div>
 
 
-    <!-- ==========================================
-         MONTH NAVIGATION
-         ========================================== -->
+    <!-- CALENDAR CARD -->
 
-    <div class="card border-0 shadow-sm mb-4 calendar-card">
+    <div class="card border-0 shadow-sm calendar-main-card">
 
-        <div class="card-body">
+        <!-- MONTH HEADER -->
 
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="calendar-toolbar">
 
-                <a
-                    href="?year={{ previous_year }}&month={{ previous_month }}"
-                    class="btn btn-outline-primary"
-                >
-                    <i class="bi bi-chevron-left"></i>
-
-                    <span class="d-none d-sm-inline">
-                        Previous
-                    </span>
-                </a>
+            <a href="?year={{ previous_year }}&month={{ previous_month }}{% if vehicle_id %}&vehicle={{ vehicle_id }}{% endif %}"
+                class="calendar-nav-button" aria-label="Previous month">
+                <i class="bi bi-chevron-left"></i>
+            </a>
 
 
-                <div class="text-center">
+            <div class="calendar-month-title">
 
-                    <h2 class="fw-bold mb-0">
-                        {{ month_name }}
-                        {{ calendar_year }}
-                    </h2>
+                <h2>
+                    {{ month_name }}
+                </h2>
 
-                </div>
-
-
-                <a
-                    href="?year={{ next_year }}&month={{ next_month }}"
-                    class="btn btn-outline-primary"
-                >
-
-                    <span class="d-none d-sm-inline">
-                        Next
-                    </span>
-
-                    <i class="bi bi-chevron-right"></i>
-
-                </a>
+                <span>
+                    {{ calendar_year }}
+                </span>
 
             </div>
 
+
+            <a href="?year={{ next_year }}&month={{ next_month }}{% if vehicle_id %}&vehicle={{ vehicle_id }}{% endif %}"
+                class="calendar-nav-button" aria-label="Next month">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+
+            <a href="?year={{ today.year }}&month={{ today.month }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if event_type_filter %}&event_type={{ event_type_filter|urlencode }}{% endif %}{% if vehicle_id %}&vehicle={{ vehicle_id }}{% endif %}"
+                class="btn btn-outline-primary">
+                Today
+            </a>
+
         </div>
+        <!-- ==========================================
+     CALENDAR FILTERS
+     ========================================== -->
 
-    </div>
+        <div class="calendar-filters mb-4">
 
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-    <!-- ==========================================
-         CALENDAR
-         ========================================== -->
+                <h5 class="mb-0">
+                    <i class="bi bi-funnel-fill"></i>
+                    Filter Events
+                </h5>
 
-    <div class="card border-0 shadow-sm calendar-card">
-
-        <div class="card-body p-0">
-
-            <div class="season-calendar">
-
-                <!-- DAY HEADINGS -->
-
-                <div class="calendar-week calendar-header">
-
-                    <div>Mon</div>
-                    <div>Tue</div>
-                    <div>Wed</div>
-                    <div>Thu</div>
-                    <div>Fri</div>
-                    <div>Sat</div>
-                    <div>Sun</div>
-
-                </div>
+            </div>
 
 
-                <!-- WEEKS -->
+            <form method="get">
 
-                {% for week in weeks %}
+                <!-- Keep current month -->
 
-                    <div class="calendar-week">
+                <input type="hidden" name="year" value="{{ calendar_year }}">
 
-                        {% for day in week %}
-
-                            <div
-                                class="
-                                    calendar-day
-                                    {% if day.month != calendar_month %}
-                                        other-month
-                                    {% endif %}
-                                    {% if day == today %}
-                                        today
-                                    {% endif %}
-                                "
-                            >
-
-                                <!-- DATE -->
-
-                                <div class="calendar-date">
-
-                                    {{ day.day }}
-
-                                </div>
+                <input type="hidden" name="month" value="{{ calendar_month }}">
 
 
-                                <!-- EVENTS -->
+                <div class="row g-3">
 
-                                {% for event in events_by_date|get_item:day %}
 
-                    
+                    <!-- STATUS -->
 
-                                    <a
-                                        href="{% url 'events:event_detail' event.id %}"
-                                        class="calendar-event
-                                        {% if event.status == 'Completed' %}
-                                            event-completed
-                                        {% elif event.status == 'Cancelled' %}
-                                            event-cancelled
-                                        {% else %}
-                                            event-upcoming
-                                        {% endif %}"
-                                    >
+                    <div class="col-md-4">
 
-                                        <strong>
-                                            {{ event.title }}
-                                        </strong>
+                        <label for="status-filter" class="form-label fw-semibold">
+                            Status
+                        </label>
 
-                                        {% if event.vehicle %}
+                        <select id="status-filter" name="status" class="form-select">
 
-                                            <small>
-                                                🚗
-                                                {{ event.vehicle.nickname }}
-                                            </small>
+                            <option value="">
+                                All Events
+                            </option>
 
-                                        {% endif %}
+                            <option value="Upcoming" {% if status_filter == "Upcoming" %} selected {% endif %}>
+                                Upcoming
+                            </option>
 
-                                    </a>
+                            <option value="Completed" {% if status_filter == "Completed" %} selected {% endif %}>
+                                Completed
+                            </option>
 
-                                {% endfor %}
+                            <option value="Cancelled" {% if status_filter == "Cancelled" %} selected {% endif %}>
+                                Cancelled
+                            </option>
 
-                            </div>
-
-                        {% endfor %}
+                        </select>
 
                     </div>
 
-                {% endfor %}
 
+                    <!-- RALLY TYPE -->
+
+                    <div class="col-md-4">
+
+                        <label for="event-type-filter" class="form-label fw-semibold">
+                            Rally / Event Type
+                        </label>
+
+                        <select id="event-type-filter" name="event_type" class="form-select">
+
+                            <option value="">
+                                All Event Types
+                            </option>
+
+                            {% for value, label in event_types %}
+
+                            <option value="{{ value }}" {% if event_type_filter == value %} selected {% endif %}>
+                                {{ label }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- VEHICLE -->
+
+                    <div class="col-md-4">
+
+                        <label for="vehicle-filter" class="form-label fw-semibold">
+                            Competition Vehicle
+                        </label>
+
+                        <select id="vehicle-filter" name="vehicle" class="form-select">
+
+                            <option value="">
+                                All Vehicles
+                            </option>
+
+                            {% for vehicle in vehicles %}
+
+                            <option value="{{ vehicle.id }}"
+                                {% if selected_vehicle and selected_vehicle.id == vehicle.id %} selected {% endif %}>
+                                {{ vehicle.nickname }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="d-flex gap-2 mt-3">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel-fill"></i>
+                        Apply Filters
+                    </button>
+
+
+                    <a href="?year={{ calendar_year }}&month={{ calendar_month }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Clear
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- DAY HEADERS -->
+
+        <div class="calendar-grid calendar-day-header">
+
+            <div>MON</div>
+            <div>TUE</div>
+            <div>WED</div>
+            <div>THU</div>
+            <div>FRI</div>
+            <div>SAT</div>
+            <div>SUN</div>
+
+        </div>
+
+
+        <!-- CALENDAR WEEKS -->
+
+        <div class="calendar-grid calendar-month">
+
+            {% for week in weeks %}
+
+            {% for day in week %}
+
+            <div class="
+                            calendar-cell
+                            {% if day.month != calendar_month %}
+                                calendar-cell-other-month
+                            {% endif %}
+                            {% if day == today %}
+                                calendar-cell-today
+                            {% endif %}
+                        ">
+
+                <!-- DATE NUMBER -->
+
+                <div class="calendar-date-number">
+
+                    {{ day.day }}
+
+                    {% if day == today %}
+                    <span class="today-label">
+                        TODAY
+                    </span>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- EVENTS -->
+
+                {% for event in events_by_date|get_item:day %}
+
+                <a href="{% url 'events:event_detail' event.id %}" class="
+            calendar-event-card
+            {% if event.selected %}
+                calendar-event-active
+            {% endif %}
+            {% if event.status == 'Completed' %}
+                calendar-event-completed
+            {% elif event.status == 'Cancelled' %}
+                calendar-event-cancelled
+            {% else %}
+                calendar-event-upcoming
+            {% endif %}
+        ">
+
+                    <!-- EVENT HEADER -->
+
+                    <div class="calendar-event-header">
+
+                        <span class="calendar-event-flag">
+                            🏁
+                        </span>
+
+                        <span class="calendar-event-name">
+                            {{ event.title }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- VEHICLE -->
+
+                    {% if event.vehicle %}
+
+                    <div class="calendar-event-info">
+
+                        <i class="bi bi-car-front-fill"></i>
+
+                        {{ event.vehicle.nickname }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- VENUE -->
+
+                    {% if event.venue %}
+
+                    <div class="calendar-event-info">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ event.venue }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- PREPARATION -->
+
+                    {% if event.total_checks %}
+
+                    <div class="calendar-event-preparation">
+
+                        <div class="calendar-event-preparation-label">
+
+                            <span>Preparation</span>
+
+                            <strong>
+                                {{ event.progress }}%
+                            </strong>
+
+                        </div>
+
+
+                        <div class="calendar-event-progress">
+
+                            <div class="calendar-event-progress-bar" style="width: {{ event.progress }}%;"></div>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- FOOTER -->
+
+                    <div class="calendar-event-footer">
+
+                        {% if event.selected %}
+
+                        <span class="calendar-active-badge">
+                            ⭐ Current Event
+                        </span>
+
+                        {% elif event.status == "Completed" %}
+
+                        <span class="calendar-status-badge completed">
+                            Completed
+                        </span>
+
+                        {% elif event.status == "Cancelled" %}
+
+                        <span class="calendar-status-badge cancelled">
+                            Cancelled
+                        </span>
+
+                        {% else %}
+
+                        <span class="calendar-status-badge upcoming">
+                            Upcoming
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+                {% empty %}
+
+                <div class="calendar-empty-day"></div>
+
+                {% endfor %}
             </div>
+
+            {% endfor %}
+
+            {% endfor %}
 
         </div>
 
     </div>
 
 
-    <!-- ==========================================
-         LEGEND
-         ========================================== -->
+    <!-- LEGEND -->
 
-    <div class="d-flex flex-wrap gap-3 mt-3">
+    <div class="calendar-legend-wrapper mt-3">
 
-        <span>
-            <span class="calendar-legend event-upcoming"></span>
+        <div class="calendar-legend-item">
+
+            <span class="calendar-legend-dot calendar-legend-upcoming"></span>
+
             Upcoming
-        </span>
 
-        <span>
-            <span class="calendar-legend event-completed"></span>
+        </div>
+
+
+        <div class="calendar-legend-item">
+
+            <span class="calendar-legend-dot calendar-legend-completed"></span>
+
             Completed
-        </span>
 
-        <span>
-            <span class="calendar-legend event-cancelled"></span>
+        </div>
+
+
+        <div class="calendar-legend-item">
+
+            <span class="calendar-legend-dot calendar-legend-cancelled"></span>
+
             Cancelled
-        </span>
+
+        </div>
 
     </div>
 
