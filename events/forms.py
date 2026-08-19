@@ -32,6 +32,7 @@ class EventTaskForm(forms.ModelForm):
         fields = [
             "title",
             "category",
+            "priority",
             "due_date",
             "notes",
         ]
@@ -45,6 +46,12 @@ class EventTaskForm(forms.ModelForm):
             ),
 
             "category": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "priority": forms.Select(
                 attrs={
                     "class": "form-select",
                 }

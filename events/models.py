@@ -100,6 +100,12 @@ class EventTask(models.Model):
         ("Other", "Other"),
     ]
 
+    PRIORITY_CHOICES = [
+        ("High", "High"),
+        ("Medium", "Medium"),
+        ("Low", "Low"),
+    ]
+
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
@@ -121,6 +127,13 @@ class EventTask(models.Model):
         default="Other",
     )
 
+
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default="Medium",
+    )
+
     completed = models.BooleanField(
         default=False,
     )
@@ -137,6 +150,36 @@ class EventTask(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
+
+    @property
+    def due_status(self):
+
+        # Completed tasks take priority
+        if self.completed:
+            return "Completed"
+
+        # No due date
+        if not self.due_date:
+            return "No Deadline"
+
+        today = date.today()
+
+        # Past due
+        if self.due_date < today:
+            return "Overdue"
+
+        # Due today
+        if self.due_date == today:
+            return "Due Today"
+
+        # Due within the next 7 days
+        days_until_due = (self.due_date - today).days
+
+        if days_until_due <= 7:
+            return "Due Soon"
+
+        # More than 7 days away
+        return "Upcoming"
 
     class Meta:
         ordering = [

@@ -201,7 +201,6 @@ def event_detail(request, event_id):
     tool_checks = preparation_checks.filter(
         category="Tools"
     )
-
     # -----------------------------------------
     # DAYS UNTIL EVENT
     # -----------------------------------------
@@ -209,6 +208,79 @@ def event_detail(request, event_id):
     days_remaining = (
         event.event_date - date.today()
     ).days
+
+    # ==========================================
+    # EVENT TASK SUMMARY
+    # ==========================================
+
+    event_tasks = EventTask.objects.filter(
+        event=event,
+        user=request.user,
+    )
+
+    total_tasks = event_tasks.count()
+
+    completed_tasks = event_tasks.filter(
+        completed=True
+    ).count()
+
+    overdue_tasks = 0
+    due_today_tasks = 0
+    due_soon_tasks = 0
+    upcoming_tasks = 0
+    no_deadline_tasks = 0
+
+    for task in event_tasks:
+
+        if task.due_status == "Overdue":
+            overdue_tasks += 1
+
+        elif task.due_status == "Due Today":
+            due_today_tasks += 1
+
+        elif task.due_status == "Due Soon":
+            due_soon_tasks += 1
+
+        elif task.due_status == "Upcoming":
+            upcoming_tasks += 1
+
+        elif task.due_status == "No Deadline":
+            no_deadline_tasks += 1
+
+    tasks_remaining = total_tasks - completed_tasks
+
+    if total_tasks:
+        task_progress = round(
+            (completed_tasks / total_tasks) * 100
+        )
+    else:
+        task_progress = 0
+
+    # -----------------------------------------
+    # TASK FILTER (from Task Attention boxes)
+    # -----------------------------------------
+
+    task_filter = request.GET.get("task_filter")
+
+    task_filter_map = {
+        "overdue": "Overdue",
+        "due_today": "Due Today",
+        "due_soon": "Due Soon",
+        "upcoming": "Upcoming",
+        "no_deadline": "No Deadline",
+        "completed": "Completed",
+    }
+
+    if task_filter in task_filter_map:
+
+        due_status_label = task_filter_map[task_filter]
+
+        event_tasks = [
+            task
+            for task in event_tasks
+            if task.due_status == due_status_label
+        ]
+
 
     return render(
         request,
@@ -230,7 +302,14 @@ def event_detail(request, event_id):
             "completed_tasks": completed_tasks,
             "task_progress": task_progress,
             "tasks_remaining": tasks_remaining,
+            "task_filter": task_filter,
 
+            "overdue_tasks": overdue_tasks,
+            "due_today_tasks": due_today_tasks,
+            "due_soon_tasks": due_soon_tasks,
+            "upcoming_tasks": upcoming_tasks,
+            "no_deadline_tasks": no_deadline_tasks,
+            
             "days_remaining":days_remaining,
 
             "vehicle_checks": vehicle_checks,

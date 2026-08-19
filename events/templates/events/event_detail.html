@@ -1,58 +1,75 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{ event.title }} | Motorsport Navigator
+{{ event.title }} | Motorsport Navigator
 {% endblock %}
 
 {% block content %}
 
 <!-- ==========================================
-     EVENT HEADER
+     EVENT HUB HEADER
      ========================================== -->
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+<div class="mb-4">
 
-    <div>
+    <a href="{% url 'events:events' %}" class="text-decoration-none">
+        ← Back to Events
+    </a>
 
-        <div class="mb-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-3">
 
-            <a
-                href="{% url 'events:events' %}"
-                class="text-decoration-none"
-            >
-                ← Back to Events
-            </a>
+        <div>
+
+            <div class="d-flex flex-wrap gap-2 mb-2">
+
+                <span class="badge bg-dark">
+                    {{ event.event_type }}
+                </span>
+
+                <span class="badge bg-{{ event.status|lower }}">
+                    {{ event.status }}
+                </span>
+
+                {% if event.selected %}
+
+                <span class="badge bg-success">
+                    ⭐ Active Event
+                </span>
+
+                {% endif %}
+
+            </div>
+
+            <h1 class="fw-bold mb-1">
+                🏁 {{ event.title }}
+            </h1>
+
+            <p class="text-muted mb-0">
+                {{ event.organiser|default:"Organiser not set" }}
+                ·
+                {{ event.venue }}
+            </p>
 
         </div>
 
-        <h1 class="fw-bold mb-1">
-            🏁 {{ event.title }}
-        </h1>
 
-        <p class="text-muted mb-0">
-            {{ event.event_type }}
-        </p>
+        <div class="mt-3 mt-md-0">
 
-    </div>
-
-    <div class="mt-3 mt-md-0">
-
-        {% if event.selected %}
+            {% if event.selected %}
 
             <span class="badge bg-success fs-6 px-3 py-2">
                 ⭐ Active Event
             </span>
 
-        {% else %}
+            {% else %}
 
-            <a
-                href="{% url 'events:select_event' event.id %}"
-                class="btn btn-outline-success"
-            >
+            <a href="{% url 'events:select_event' event.id %}" class="btn btn-outline-success">
                 ⭐ Make Active
             </a>
 
-        {% endif %}
+            {% endif %}
+
+        </div>
 
     </div>
 
@@ -69,7 +86,9 @@
 
         {% if days_remaining > 0 %}
 
-            <h2 class="display-4 fw-bold text-success">
+        <div class="text-success">
+
+            <h2 class="display-4 fw-bold mb-0">
                 {{ days_remaining }}
             </h2>
 
@@ -77,9 +96,13 @@
                 Days Until Event
             </p>
 
+        </div>
+
         {% elif days_remaining == 0 %}
 
-            <h2 class="display-4 fw-bold text-warning">
+        <div class="text-warning">
+
+            <h2 class="display-4 fw-bold mb-0">
                 🏁 TODAY
             </h2>
 
@@ -87,9 +110,13 @@
                 Event Day
             </p>
 
+        </div>
+
         {% else %}
 
-            <h2 class="display-4 fw-bold text-secondary">
+        <div class="text-secondary">
+
+            <h2 class="display-4 fw-bold mb-0">
                 Completed
             </h2>
 
@@ -97,7 +124,356 @@
                 Event has finished
             </p>
 
+        </div>
+
         {% endif %}
+
+    </div>
+
+</div>
+<!-- ==========================================
+     TASK ATTENTION SUMMARY
+     ========================================== -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h5 class="mb-0">
+            ⚠️ Task Attention
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- URGENT TASKS -->
+
+        <h6 class="text-muted mb-3">
+            Needs Attention
+        </h6>
+
+        <div class="row g-3 text-center mb-4">
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=overdue" class="text-decoration-none">
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            🔴
+                        </div>
+
+                        <h4 class="fw-bold text-danger mb-1">
+                            {{ overdue_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Overdue
+                        </small>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=due_today" class="text-decoration-none">
+
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            🟠
+                        </div>
+
+                        <h4 class="fw-bold text-warning mb-1">
+                            {{ due_today_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Due Today
+                        </small>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=due_soon" class="text-decoration-none">
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            🟡
+                        </div>
+
+                        <h4 class="fw-bold text-warning mb-1">
+                            {{ due_soon_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Due Soon
+                        </small>
+
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+
+        <!-- GENERAL TASK OVERVIEW -->
+
+        <h6 class="text-muted mb-3">
+            Task Overview
+        </h6>
+
+        <div class="row g-3 text-center">
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=upcoming" class="text-decoration-none">
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            🔵
+                        </div>
+
+                        <h4 class="fw-bold text-primary mb-1">
+                            {{ upcoming_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Upcoming
+                        </small>
+
+                    </div>
+                </a>
+            </div>
+
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=no_deadline" class="text-decoration-none">
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            ⚪
+                        </div>
+
+                        <h4 class="fw-bold text-secondary mb-1">
+                            {{ no_deadline_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            No Deadline
+                        </small>
+
+                    </div>
+                </a>
+            </div>
+
+
+            <div class="col-6 col-md-4">
+
+                <a href="?task_filter=completed" class="text-decoration-none">
+
+                    <div class="p-3 border rounded bg-light">
+
+                        <div class="fs-2">
+                            ✅
+                        </div>
+
+                        <h4 class="fw-bold text-success mb-1">
+                            {{ completed_tasks }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Completed
+                        </small>
+
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     QUICK EVENT HUB
+     ========================================== -->
+
+<div class="mb-4">
+
+    <h4 class="fw-bold mb-3">
+        Event Hub
+    </h4>
+
+    <div class="row g-3">
+
+
+        <!-- PREPARATION -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <a href="{% if event.vehicle %}{% url 'preparation:event_preparation' event.id %}{% else %}#{% endif %}"
+                class="text-decoration-none">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="fs-2 mb-2">
+                            🔧
+                        </div>
+
+                        <h5 class="fw-bold">
+                            Preparation
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+                            Vehicle preparation checklist
+                        </p>
+
+                        <div class="progress mb-2" style="height: 8px;">
+
+                            <div class="progress-bar bg-success" style="width: {{ preparation_progress }}%;"></div>
+
+                        </div>
+
+                        <strong>
+                            {{ preparation_progress }}%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- TASKS -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <a href="#event-tasks" class="text-decoration-none">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="fs-2 mb-2">
+                            ☑️
+                        </div>
+
+                        <h5 class="fw-bold">
+                            Event Tasks
+                        </h5>
+
+                        <p class="text-muted small mb-2">
+                            Manage your rally tasks
+                        </p>
+
+                        <strong>
+                            {{ task_progress }}% complete
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- VEHICLE -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="fs-2 mb-2">
+                        🚗
+                    </div>
+
+                    <h5 class="fw-bold">
+                        Competition Vehicle
+                    </h5>
+
+                    {% if event.vehicle %}
+
+                    <p class="mb-0">
+                        {{ event.vehicle.nickname }}
+                    </p>
+
+                    <small class="text-muted">
+                        {{ event.vehicle.make }}
+                        {{ event.vehicle.model }}
+                    </small>
+
+                    {% else %}
+
+                    <p class="text-warning mb-0">
+                        No vehicle assigned
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DOCUMENTS -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="fs-2 mb-2">
+                        📄
+                    </div>
+
+                    <h5 class="fw-bold">
+                        Documents
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        Event documents and paperwork
+                    </p>
+
+                    <span class="badge bg-secondary mt-2">
+                        Coming Next
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -105,10 +481,13 @@
 
 
 <!-- ==========================================
-     EVENT INFORMATION
+     EVENT INFORMATION + VEHICLE
      ========================================== -->
 
 <div class="row g-4 mb-4">
+
+
+    <!-- EVENT INFORMATION -->
 
     <div class="col-lg-6">
 
@@ -126,19 +505,26 @@
 
                 <div class="mb-3">
 
-                    <strong>Event Type</strong>
+                    <strong>
+                        Event Type
+                    </strong>
 
-                    <div>
+                    <div class="mt-1">
+
                         <span class="badge bg-dark">
                             {{ event.event_type }}
                         </span>
+
                     </div>
 
                 </div>
 
+
                 <div class="mb-3">
 
-                    <strong>📅 Date</strong>
+                    <strong>
+                        📅 Date
+                    </strong>
 
                     <div>
                         {{ event.event_date|date:"d F Y" }}
@@ -146,9 +532,12 @@
 
                 </div>
 
+
                 <div class="mb-3">
 
-                    <strong>📍 Venue</strong>
+                    <strong>
+                        📍 Venue
+                    </strong>
 
                     <div>
                         {{ event.venue }}
@@ -156,9 +545,12 @@
 
                 </div>
 
+
                 <div>
 
-                    <strong>👤 Organiser</strong>
+                    <strong>
+                        👤 Organiser
+                    </strong>
 
                     <div>
                         {{ event.organiser|default:"Not Set" }}
@@ -173,9 +565,7 @@
     </div>
 
 
-    <!-- ======================================
-         COMPETITION VEHICLE
-         ====================================== -->
+    <!-- VEHICLE -->
 
     <div class="col-lg-6">
 
@@ -193,48 +583,48 @@
 
                 {% if event.vehicle %}
 
-                    <h3 class="fw-bold">
-                        {{ event.vehicle.nickname }}
-                    </h3>
+                <h3 class="fw-bold">
+                    {{ event.vehicle.nickname }}
+                </h3>
 
-                    <p class="mb-1">
-                        <strong>
-                            {{ event.vehicle.make }}
-                            {{ event.vehicle.model }}
-                        </strong>
-                    </p>
+                <p class="mb-1">
+                    <strong>
+                        {{ event.vehicle.make }}
+                        {{ event.vehicle.model }}
+                    </strong>
+                </p>
 
-                    <p class="text-muted">
-                        {{ event.vehicle.registration }}
-                    </p>
+                <p class="text-muted">
+                    {{ event.vehicle.registration }}
+                </p>
 
-                    <div class="alert alert-success mb-0">
+                <div class="alert alert-success mb-0">
 
-                        <strong>
-                            ✓ Vehicle Assigned
-                        </strong>
+                    <strong>
+                        ✓ Vehicle Assigned
+                    </strong>
 
-                        <br>
+                    <br>
 
-                        This is the competition vehicle
-                        assigned specifically to this event.
+                    This vehicle is assigned specifically
+                    to this event.
 
-                    </div>
+                </div>
 
                 {% else %}
 
-                    <div class="alert alert-warning">
+                <div class="alert alert-warning mb-0">
 
-                        <strong>
-                            ⚠ No Competition Vehicle Assigned
-                        </strong>
+                    <strong>
+                        ⚠ No Competition Vehicle Assigned
+                    </strong>
 
-                        <p class="mb-0 mt-2">
-                            Assign a competition vehicle before
-                            preparing for this event.
-                        </p>
+                    <p class="mb-0 mt-2">
+                        Assign a competition vehicle before
+                        preparing for this event.
+                    </p>
 
-                    </div>
+                </div>
 
                 {% endif %}
 
@@ -288,19 +678,10 @@
 
                 </div>
 
-                <div
-                    class="progress"
-                    style="height: 12px;"
-                >
+                <div class="progress" style="height: 12px;">
 
-                    <div
-                        class="progress-bar bg-success"
-                        role="progressbar"
-                        style="width: {{ preparation_progress }}%;"
-                        aria-valuenow="{{ preparation_progress }}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                    ></div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ preparation_progress }}%;">
+                    </div>
 
                 </div>
 
@@ -313,8 +694,8 @@
 
                     {% if checks_remaining > 0 %}
 
-                        · {{ checks_remaining }}
-                        remaining
+                    · {{ checks_remaining }}
+                    remaining
 
                     {% endif %}
 
@@ -327,21 +708,15 @@
 
                 {% if event.vehicle %}
 
-                    <a
-                        href="{% url 'preparation:event_preparation' event.id %}"
-                        class="btn btn-success btn-lg w-100"
-                    >
-                        🔧 Prepare This Event
-                    </a>
+                <a href="{% url 'preparation:event_preparation' event.id %}" class="btn btn-success btn-lg w-100">
+                    🔧 Open Preparation
+                </a>
 
                 {% else %}
 
-                    <button
-                        class="btn btn-secondary btn-lg w-100"
-                        disabled
-                    >
-                        🚗 Assign Vehicle First
-                    </button>
+                <button class="btn btn-secondary btn-lg w-100" disabled>
+                    🚗 Assign Vehicle First
+                </button>
 
                 {% endif %}
 
@@ -353,24 +728,22 @@
 
 </div>
 
+
 <!-- ==========================================
      EVENT TASKS
      ========================================== -->
 
-<div class="card shadow-sm border-0 mb-4">
+<div id="event-tasks" class="card shadow-sm border-0 mb-4">
 
     <div class="card-header bg-dark text-white">
 
         <div class="d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0">
-                📋 Event Tasks
+                ☑️ Event Tasks
             </h5>
 
-            <a
-                href="{% url 'events:add_event_task' event.id %}"
-                class="btn btn-sm btn-light"
-            >
+            <a href="{% url 'events:add_event_task' event.id %}" class="btn btn-sm btn-light">
                 <i class="bi bi-plus-circle"></i>
                 Add Task
             </a>
@@ -379,160 +752,263 @@
 
     </div>
 
+
     <div class="card-body">
+
+        {% if task_filter %}
+
+        <div class="alert alert-info d-flex justify-content-between align-items-center py-2 px-3 mb-3">
+
+            <span>
+                Showing:
+                <strong>
+                    {% if task_filter == "overdue" %}Overdue
+                    {% elif task_filter == "due_today" %}Due Today
+                    {% elif task_filter == "due_soon" %}Due Soon
+                    {% elif task_filter == "upcoming" %}Upcoming
+                    {% elif task_filter == "no_deadline" %}No Deadline
+                    {% elif task_filter == "completed" %}Completed
+                    {% endif %}
+                </strong>
+                tasks only
+            </span>
+
+            <a href="{% url 'events:event_detail' event.id %}" class="btn btn-sm btn-outline-secondary">
+                ✕ Clear Filter
+            </a>
+
+        </div>
+
+        {% endif %}
 
         {% if total_tasks %}
 
-            <div class="d-flex justify-content-between mb-2">
+        <div class="d-flex justify-content-between mb-2">
 
-                <strong>
-                    Task Progress
-                </strong>
+            <strong>
+                Task Progress
+            </strong>
 
-                <strong>
-                    {{ task_progress }}%
-                </strong>
+            <strong>
+                {{ task_progress }}%
+            </strong>
 
-            </div>
-
-            <div
-                class="progress mb-3"
-                style="height: 10px;"
-            >
-
-                <div
-                    class="progress-bar bg-success"
-                    style="width: {{ task_progress }}%;"
-                ></div>
-
-            </div>
-
-            <p class="text-muted">
-
-                {{ completed_tasks }}
-                of
-                {{ total_tasks }}
-                tasks completed
-
-                {% if tasks_remaining %}
-                    · {{ tasks_remaining }} remaining
-                {% endif %}
-
-            </p>
+        </div>
 
 
-            {% for task in event_tasks %}
+        <div class="progress mb-3" style="height: 10px;">
 
-                <div
-                    class="
-                        d-flex
-                        align-items-center
-                        gap-2
-                        border
-                        rounded
-                        p-2
-                        mb-2
-                        {% if task.completed %}
-                            bg-light
-                        {% endif %}
-                    "
-                >
+            <div class="progress-bar bg-success" style="width: {{ task_progress }}%;"></div>
 
-                    <a
-                        href="{% url 'events:toggle_event_task' task.id %}"
-                        class="btn btn-sm
+        </div>
+
+
+        <p class="text-muted">
+
+            {{ completed_tasks }}
+            of
+            {{ total_tasks }}
+            tasks completed
+
+            {% if tasks_remaining %}
+
+            · {{ tasks_remaining }}
+            remaining
+
+            {% endif %}
+
+        </p>
+
+
+        {% for task in event_tasks %}
+
+        <div class="d-flex align-items-center gap-2 border rounded p-2 mb-2
+            {% if task.completed %}
+                bg-light
+            {% elif task.due_status == 'Overdue' %}
+                bg-danger-subtle border-danger
+            {% elif task.due_status == 'Due Today' %}
+                border-warning
+            {% elif task.due_status == 'Due Soon' %}
+                bg-warning-subtle border-warning
+            {% elif task.due_status == 'Upcoming' %}
+                bg-primary-subtle border-primary
+            {% elif task.due_status == 'No Deadline' %}
+                bg-secondary-subtle border-secondary
+            {% endif %}"
+            {% if not task.completed and task.due_status == 'Due Today' %}
+            style="background-color: #FF9800;"
+            {% endif %}>
+
+            <a href="{% url 'events:toggle_event_task' task.id %}" class="btn btn-sm
                         {% if task.completed %}
                             btn-success
                         {% else %}
                             btn-outline-secondary
-                        {% endif %}"
-                    >
+                        {% endif %}">
 
-                        {% if task.completed %}
-                            ✓
-                        {% else %}
-                            ○
+                {% if task.completed %}
+                ✓
+                {% else %}
+                ○
+                {% endif %}
+
+            </a>
+
+
+            <div class="flex-grow-1">
+
+                <strong {% if task.completed %} class="text-muted text-decoration-line-through" {% endif %}>
+                    {{ task.title }}
+                </strong>
+
+                <div>
+
+                    <div>
+
+                        <span class="badge bg-secondary">
+                            {{ task.category }}
+                        </span>
+
+                        {% if task.priority == "High" %}
+
+                        <span class="badge bg-danger ms-1">
+                            🔴 High
+                        </span>
+
+                        {% elif task.priority == "Medium" %}
+
+                        <span class="badge bg-warning text-dark ms-1">
+                            🟡 Medium
+                        </span>
+
+                        {% elif task.priority == "Low" %}
+
+                        <span class="badge bg-success ms-1">
+                            🟢 Low
+                        </span>
+
                         {% endif %}
-
-                    </a>
-
-
-                    <div class="flex-grow-1">
-
-                        <strong
-                            {% if task.completed %}
-                                class="text-muted text-decoration-line-through"
-                            {% endif %}
-                        >
-                            {{ task.title }}
-                        </strong>
-
-                        <div>
-
-                            <span class="badge bg-secondary">
-                                {{ task.category }}
-                            </span>
-
-                            {% if task.due_date %}
-
-                                <small class="text-muted ms-2">
-                                    Due:
-                                    {{ task.due_date|date:"d M Y" }}
-                                </small>
-
-                            {% endif %}
-
-                        </div>
 
                     </div>
 
+                    {% if task.due_status == "Overdue" %}
 
-                    <form
-                        method="POST"
-                        action="{% url 'events:delete_event_task' task.id %}"
-                    >
+                    <span class="badge bg-danger">
+                        🔴 Overdue
+                    </span>
 
-                        {% csrf_token %}
+                    {% elif task.due_status == "Due Today" %}
 
-                        <button
-                            type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            title="Delete task"
-                        >
-                            🗑
-                        </button>
+                    <span class="badge text-dark" style="background-color: #FF9800;">
+                        🟠 Due Today
+                    </span>
 
-                    </form>
+                    {% elif task.due_status == "Due Soon" %}
+
+                    <span class="badge bg-warning text-dark">
+                        🟡 Due Soon
+                    </span>
+
+                    {% elif task.due_status == "Upcoming" %}
+
+                    <span class="badge bg-primary">
+                        🔵 Upcoming
+                    </span>
+
+                    {% elif task.due_status == "No Deadline" %}
+
+                    <span class="badge bg-secondary">
+                        ⚪ No Deadline
+                    </span>
+
+                    {% elif task.due_status == "Completed" %}
+
+                    <span class="badge bg-success">
+                        ✅ Completed
+                    </span>
+
+                    {% endif %}
+
+                    {% if task.due_date %}
+
+                    <small class="text-muted ms-2">
+                        Due:
+                        {{ task.due_date|date:"d M Y" }}
+                    </small>
+
+                    {% endif %}
 
                 </div>
 
-            {% endfor %}
+            </div>
+
+
+            <form method="POST" action="{% url 'events:delete_event_task' task.id %}">
+
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete task">
+                    🗑
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endfor %}
 
         {% else %}
 
-            <div class="text-center py-4">
+        <div class="text-center py-4">
 
-                <i class="bi bi-list-check display-5 text-muted"></i>
+            <i class="bi bi-list-check display-5 text-muted"></i>
 
-                <p class="text-muted mt-2 mb-3">
-                    No event-specific tasks yet.
-                </p>
+            <p class="text-muted mt-2 mb-3">
+                No event-specific tasks yet.
+            </p>
 
-                <a
-                    href="{% url 'events:add_event_task' event.id %}"
-                    class="btn btn-primary"
-                >
-                    <i class="bi bi-plus-circle"></i>
-                    Add First Task
-                </a>
+            <a href="{% url 'events:add_event_task' event.id %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add First Task
+            </a>
 
-            </div>
+        </div>
 
         {% endif %}
 
     </div>
 
 </div>
+
+
+<!-- ==========================================
+     EVENT NOTES
+     ========================================== -->
+
+{% if event.notes %}
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+            📝 Event Notes
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <p class="mb-0">
+            {{ event.notes|linebreaksbr }}
+        </p>
+
+    </div>
+
+</div>
+
+{% endif %}
 
 
 <!-- ==========================================
@@ -545,23 +1021,25 @@
 
         <div class="row g-2">
 
-            <div class="col-md-6">
+            <div class="col-md-4">
 
-                <a
-                    href="{% url 'events:edit_event' event.id %}"
-                    class="btn btn-outline-primary w-100"
-                >
+                <a href="{% url 'events:events' %}" class="btn btn-outline-secondary w-100">
+                    ← Events
+                </a>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <a href="{% url 'events:edit_event' event.id %}" class="btn btn-outline-primary w-100">
                     ✏ Edit Event
                 </a>
 
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
 
-                <a
-                    href="{% url 'events:delete_event' event.id %}"
-                    class="btn btn-outline-danger w-100"
-                >
+                <a href="{% url 'events:delete_event' event.id %}" class="btn btn-outline-danger w-100">
                     🗑 Delete Event
                 </a>
 
