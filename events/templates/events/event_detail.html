@@ -131,6 +131,165 @@
     </div>
 
 </div>
+
+<!-- ==========================================
+     EVENT ATTENTION WARNING
+     ========================================== -->
+
+{% if overdue_tasks > 0 or high_priority_tasks > 0 or checks_remaining > 0 and days_remaining <= 14 %}
+
+<div class="alert shadow-sm mb-4
+    {% if days_remaining >= 0 and days_remaining <= 2 %}
+        alert-danger
+    {% elif days_remaining >= 3 and days_remaining <= 6 %}
+        alert-warning
+    {% elif days_remaining >= 7 and days_remaining <= 14 %}
+        alert-warning
+    {% elif days_remaining > 14 %}
+        alert-primary
+    {% else %}
+        alert-secondary
+    {% endif %}" role="alert">
+
+    <div class="d-flex align-items-start gap-3">
+
+        <div class="fs-2">
+            🚨
+        </div>
+
+        <div class="flex-grow-1">
+
+            <h5 class="alert-heading fw-bold mb-1">
+                Attention Required
+            </h5>
+
+            {% if days_remaining == 0 %}
+
+            <div class="mb-2 fw-bold text-danger">
+                🔴 Event Today — Urgent
+            </div>
+            {% endif %}
+
+            {% if days_remaining > 0 and days_remaining <= 2 %}
+
+            <div class="mb-2 fw-bold text-danger">
+                🔴 Event in {{ days_remaining }} day{{ days_remaining|pluralize }} — Urgent
+            </div>
+            {% elif days_remaining >= 3 and days_remaining <= 6 %}
+
+            <div class="mb-2 fw-bold" style="color: #FF9800;">
+                🟠 Event in {{ days_remaining }} days — Action Required
+            </div>
+            {% elif days_remaining >= 7 and days_remaining <= 14 %}
+
+            <div class="mb-2 fw-bold" style="color: #B26A00;">
+                🟡 Event in {{ days_remaining }} days — Preparation
+            </div>
+            {% elif days_remaining > 14 %}
+
+            <div class="mb-2 fw-bold text-primary">
+                🔵 Event in {{ days_remaining }} days — Planning
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+
+                {% if overdue_tasks > 0 %}
+
+                <div class="mb-1">
+                    🔴
+                    <strong>{{ overdue_tasks }}</strong>
+                    overdue task{{ overdue_tasks|pluralize }}
+                </div>
+
+                {% endif %}
+
+
+                {% if high_priority_tasks > 0 %}
+
+                {% if days_remaining >= 7 %}
+
+                <div class="mb-1">
+                    🚩
+                    <strong>{{ high_priority_tasks }}</strong>
+                    high-priority task{{ high_priority_tasks|pluralize }}
+                    outstanding
+                </div>
+
+                {% elif days_remaining >= 3 %}
+
+                <div class="mb-1 fw-semibold">
+                    🟠
+                    <strong>{{ high_priority_tasks }}</strong>
+                    high-priority task{{ high_priority_tasks|pluralize }}
+                    require attention
+                </div>
+
+                {% elif days_remaining >= 0 %}
+
+                <div class="mb-1 fw-bold text-danger">
+                    🔴
+                    <strong>{{ high_priority_tasks }}</strong>
+                    high-priority task{{ high_priority_tasks|pluralize }}
+                    require immediate attention
+                </div>
+
+                    {% endif %}
+
+                {% endif %}
+                {% if checks_remaining > 0 and days_remaining <= 14 %}
+
+                {% if days_remaining >= 7 %}
+
+                <div class="mb-1">
+                    🔧
+                    <strong>{{ checks_remaining }}</strong>
+                    preparation check{{ checks_remaining|pluralize }}
+                    remaining
+                </div>
+
+                {% elif days_remaining >= 3 %}
+
+                <div class="mb-1 fw-semibold">
+                    🟠
+                    <strong>{{ checks_remaining }}</strong>
+                    preparation check{{ checks_remaining|pluralize }}
+                    still outstanding
+                </div>
+
+                {% elif days_remaining >= 0 %}
+
+                <div class="mb-1 fw-bold text-danger">
+                    🔴
+                    <strong>{{ checks_remaining }}</strong>
+                    preparation check{{ checks_remaining|pluralize }}
+                    must be completed
+                </div>
+
+                {% endif %}
+
+                {% endif %}
+
+            </div>
+
+            {% if overdue_tasks > 0 %}
+
+            <a href="?task_filter=overdue#event-tasks" class="btn btn-sm btn-danger">
+
+                View Overdue Tasks
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
 <!-- ==========================================
      TASK ATTENTION SUMMARY
      ========================================== -->
@@ -773,7 +932,7 @@
                 tasks only
             </span>
 
-            <a href="{% url 'events:event_detail' event.id %}" class="btn btn-sm btn-outline-secondary">
+            <a href="{% url 'events:event_detail' event.id %}#event-tasks" class="btn btn-sm btn-outline-secondary">
                 ✕ Clear Filter
             </a>
 
@@ -835,10 +994,8 @@
                 bg-primary-subtle border-primary
             {% elif task.due_status == 'No Deadline' %}
                 bg-secondary-subtle border-secondary
-            {% endif %}"
-            {% if not task.completed and task.due_status == 'Due Today' %}
-            style="background-color: #FF9800;"
-            {% endif %}>
+            {% endif %}" {% if not task.completed and task.due_status == 'Due Today' %}
+            style="background-color: #FF9800;" {% endif %}>
 
             <a href="{% url 'events:toggle_event_task' task.id %}" class="btn btn-sm
                         {% if task.completed %}
@@ -944,15 +1101,24 @@
             </div>
 
 
-            <form method="POST" action="{% url 'events:delete_event_task' task.id %}">
+            <div class="d-flex gap-1">
 
-                {% csrf_token %}
+                <a href="{% url 'events:edit_event_task' task.id %}" class="btn btn-sm btn-outline-primary"
+                    title="Edit task">
+                    ✏️
+                </a>
 
-                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete task">
-                    🗑
-                </button>
+                <form method="POST" action="{% url 'events:delete_event_task' task.id %}">
 
-            </form>
+                    {% csrf_token %}
+
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete task">
+                        🗑
+                    </button>
+
+                </form>
+
+            </div>
 
         </div>
 

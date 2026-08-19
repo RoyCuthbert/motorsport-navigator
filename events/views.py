@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 import calendar
 from collections import defaultdict
 from datetime import date
@@ -224,6 +225,11 @@ def event_detail(request, event_id):
         completed=True
     ).count()
 
+    high_priority_tasks = event_tasks.filter(
+        priority="High",
+        completed=False,
+    ).count()
+
     overdue_tasks = 0
     due_today_tasks = 0
     due_soon_tasks = 0
@@ -309,6 +315,7 @@ def event_detail(request, event_id):
             "due_soon_tasks": due_soon_tasks,
             "upcoming_tasks": upcoming_tasks,
             "no_deadline_tasks": no_deadline_tasks,
+            "high_priority_tasks": high_priority_tasks,
             
             "days_remaining":days_remaining,
 
@@ -342,8 +349,7 @@ def add_event_task(request, event_id):
             task.save()
 
             return redirect(
-                "events:event_detail",
-                event_id=event.id,
+                f"{reverse('events:event_detail', args=[event.id])}#event-tasks"
             )
 
     else:
@@ -357,6 +363,39 @@ def add_event_task(request, event_id):
             "event": event,
             "form": form,
         },
+    )
+
+@login_required
+def edit_event_task(request, task_id):
+    task = get_object_or_404(
+        EventTask,
+        id=task_id,
+        user=request.user,
+    )
+
+    if request.method == "POST":
+        form = EventTaskForm(request.POST, instance=task)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect(
+                f"{reverse('events:event_detail', args=[task.event.id])}#event-tasks"
+            )
+
+    else:
+        form = EventTaskForm(instance=task)
+
+    context = {
+        "form": form,
+        "task": task,
+        "event": task.event,
+    }
+
+    return render(
+        request,
+        "events/edit_event_task.html",
+        context,
     )
 
 @login_required

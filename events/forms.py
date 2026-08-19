@@ -41,7 +41,7 @@ class EventTaskForm(forms.ModelForm):
             "title": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "e.g. Submit event entry",
+                    "placeholder": "Enter task title",
                 }
             ),
 
@@ -67,7 +67,7 @@ class EventTaskForm(forms.ModelForm):
             "notes": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 3,
+                    "rows": 4,
                     "placeholder": "Optional notes...",
                 }
             ),
