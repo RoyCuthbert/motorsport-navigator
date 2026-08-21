@@ -13,6 +13,16 @@ from .forms import EventForm, EventTaskForm
 @login_required
 def events(request):
 
+    # Automatically complete past upcoming events
+    Event.objects.filter(
+        user=request.user,
+        status="Upcoming",
+        event_date__lt=date.today(),
+    ).update(
+        status="Completed",
+        selected=False,
+    )
+
     events = Event.objects.filter(
         user=request.user
     ).order_by("event_date")
@@ -122,6 +132,21 @@ def event_detail(request, event_id):
         user=request.user,
     )
 
+        # Automatically complete events once their date has passed
+    if (
+        event.status == "Upcoming"
+        and event.event_date < date.today()
+    ):
+        event.status = "Completed"
+        event.selected = False
+
+        event.save(
+            update_fields=[
+                "status",
+                "selected",
+            ]
+        )
+
     preparation_checks = PreparationItem.objects.filter(
         user=request.user,
         event=event,
@@ -230,6 +255,18 @@ def event_detail(request, event_id):
         completed=False,
     ).count()
 
+    high_priority_overdue_tasks = sum(
+        1
+        for task in event_tasks
+        if task.priority == "High"
+        and not task.completed
+        and task.due_status == "Overdue"
+    )
+
+    high_priority_non_overdue_tasks = (
+        high_priority_tasks - high_priority_overdue_tasks
+    )   
+
     overdue_tasks = 0
     due_today_tasks = 0
     due_soon_tasks = 0
@@ -287,7 +324,92 @@ def event_detail(request, event_id):
             if task.due_status == due_status_label
         ]
 
+    elif task_filter == "high_priority":
 
+        event_tasks = [
+            task
+            for task in event_tasks
+            if task.priority == "High"
+            and not task.completed
+            and task.due_status != "Overdue"
+        ]
+    elif task_filter == "critical":
+
+        event_tasks = [
+            task
+            for task in event_tasks
+            if task.priority == "High"
+            and not task.completed
+            and task.due_status == "Overdue"
+        ]
+
+    # -----------------------------------------
+    # OVERALL EVENT READINESS
+    # -----------------------------------------
+
+    if event.status == "Completed":
+
+        event_readiness = "Event Completed"
+        event_readiness_class = "success"
+        event_readiness_icon = "✅"
+
+    elif event.status == "Cancelled":
+
+        event_readiness = "Event Cancelled"
+        event_readiness_class = "secondary"
+        event_readiness_icon = "⚪"
+
+    elif high_priority_overdue_tasks > 0:
+
+        event_readiness = "Not Ready"
+        event_readiness_class = "danger"
+        event_readiness_icon = "🔴"
+
+    elif (
+        days_remaining >= 0
+        and days_remaining <= 2
+        and checks_remaining > 0
+    ):
+
+        event_readiness = "Not Ready"
+        event_readiness_class = "danger"
+        event_readiness_icon = "🔴"
+
+    elif overdue_tasks > 0:
+
+        event_readiness = "Action Required"
+        event_readiness_class = "warning"
+        event_readiness_icon = "🟠"
+
+    elif (
+        days_remaining >= 3
+        and days_remaining <= 6
+        and (
+            high_priority_non_overdue_tasks > 0
+            or checks_remaining > 0
+        )
+    ):
+
+        event_readiness = "Action Required"
+        event_readiness_class = "warning"
+        event_readiness_icon = "🟠"
+
+    elif (
+        high_priority_non_overdue_tasks > 0
+        or checks_remaining > 0
+        or tasks_remaining > 0
+    ):
+
+        event_readiness = "Preparation Required"
+        event_readiness_class = "warning"
+        event_readiness_icon = "🟡"
+
+    else:
+
+        event_readiness = "Ready for Event"
+        event_readiness_class = "success"
+        event_readiness_icon = "🟢"
+    
     return render(
         request,
         "events/event_detail.html",
@@ -316,6 +438,8 @@ def event_detail(request, event_id):
             "upcoming_tasks": upcoming_tasks,
             "no_deadline_tasks": no_deadline_tasks,
             "high_priority_tasks": high_priority_tasks,
+            "high_priority_overdue_tasks": high_priority_overdue_tasks,
+            "high_priority_non_overdue_tasks": high_priority_non_overdue_tasks,
             
             "days_remaining":days_remaining,
 
@@ -323,6 +447,10 @@ def event_detail(request, event_id):
             "safety_checks": safety_checks,
             "document_checks": document_checks,
             "tool_checks": tool_checks,
+
+            "event_readiness": event_readiness,
+            "event_readiness_class": event_readiness_class,
+            "event_readiness_icon": event_readiness_icon,
         },
     )
 
@@ -484,17 +612,25 @@ def add_event(request):
 @login_required
 def select_event(request, event_id):
 
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    # Prevent cancelled or completed events
+    # from becoming the active event.
+    if event.status != "Upcoming" or event.event_date < date.today():
+        return redirect(
+            "events:event_detail",
+            event_id=event.id,
+        )
+
     Event.objects.filter(
         user=request.user,
         selected=True,
     ).update(
         selected=False
-    )
-
-    event = get_object_or_404(
-        Event,
-        id=event_id,
-        user=request.user,
     )
 
     event.selected = True
@@ -551,6 +687,40 @@ def edit_event(request, event_id):
             "event": event,
         },
     )
+
+@login_required
+def cancel_event(request, event_id):
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    event.status = "Cancelled"
+    event.selected = False
+    event.save()
+
+    return redirect(
+        "events:event_detail",
+        event_id=event.id,
+    )
+
+@login_required
+def reopen_event(request, event_id):
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    event.status = "Upcoming"
+    event.save()
+
+    return redirect(
+        "events:event_detail",
+        event_id=event.id,
+    )
+
 @login_required
 def delete_event(request, event_id):
 
@@ -1148,5 +1318,32 @@ def season_calendar(request):
             "event_type_filter": event_type_filter,
 
             "status_filter": status_filter,
+        },
+    )
+
+@login_required
+def edit_event_review(request, event_id):
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    if request.method == "POST":
+        review_notes = request.POST.get("review_notes", "").strip()
+
+        event.review_notes = review_notes
+        event.save(update_fields=["review_notes"])
+
+        return redirect(
+            "events:event_detail",
+            event_id=event.id,
+        )
+
+    return render(
+        request,
+        "events/edit_event_review.html",
+        {
+            "event": event,
         },
     )

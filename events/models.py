@@ -74,6 +74,11 @@ class Event(models.Model):
         blank=True,
     )
 
+    review_notes = models.TextField(
+        blank=True,
+        help_text="Post-event notes, lessons learned, and improvements for future events.",
+    )
+
     created_on = models.DateTimeField(
         auto_now_add=True,
     )

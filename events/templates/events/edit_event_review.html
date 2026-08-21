@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}
+Event Review | Motorsport Navigator
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="mb-3">
+            <a href="{% url 'events:event_detail' event.id %}"
+               class="text-decoration-none">
+                ← Back to {{ event.title }}
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-dark text-white">
+
+                <h4 class="mb-0">
+                    📝 Post-Event Review Notes
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <p class="text-muted">
+                    Record what went well, what caused problems,
+                    and anything you want to improve for future events.
+                </p>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label for="review_notes"
+                               class="form-label fw-semibold">
+                            Review Notes
+                        </label>
+
+                        <textarea
+                            name="review_notes"
+                            id="review_notes"
+                            class="form-control"
+                            rows="8"
+                            placeholder="Add lessons learned, issues, preparation notes, or improvements for next time..."
+                        >{{ event.review_notes }}</textarea>
+
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+
+                        <button type="submit"
+                                class="btn btn-success">
+                            ✓ Save Review
+                        </button>
+
+                        <a href="{% url 'events:event_detail' event.id %}"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -266,3 +266,193 @@ def toggle_check(request, item_id):
     return redirect(
         f"{url}#{section}"
     )
+
+# ==========================================
+# ADD PREPARATION ITEM
+# ==========================================
+
+@require_POST
+@login_required
+def add_preparation_item(request, event_id):
+
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    # Preparation requires an assigned vehicle
+    if not event.vehicle:
+        return redirect(
+            "preparation:event_preparation",
+            event_id=event.id,
+        )
+
+    item_name = request.POST.get(
+        "item",
+        "",
+    ).strip()
+
+    category = request.POST.get(
+        "category",
+        "",
+    ).strip()
+
+    # Only allow categories defined by PreparationItem
+    valid_categories = {
+        choice[0]
+        for choice in PreparationItem.CATEGORY_CHOICES
+    }
+
+    if item_name and category in valid_categories:
+
+        PreparationItem.objects.create(
+            user=request.user,
+            event=event,
+            vehicle=event.vehicle,
+            category=category,
+            item=item_name,
+            completed=False,
+        )
+
+    section_map = {
+        "Vehicle": "vehicle-checks",
+        "Safety": "safety-checks",
+        "Documents": "document-checks",
+        "Tools": "tool-checks",
+    }
+
+    section = section_map.get(
+        category,
+        "vehicle-checks",
+    )
+
+    url = reverse(
+        "preparation:event_preparation",
+        args=[event.id],
+    )
+
+    return redirect(
+        f"{url}#{section}"
+    )
+
+# ==========================================
+# EDIT PREPARATION ITEM
+# ==========================================
+
+@login_required
+def edit_preparation_item(request, item_id):
+
+    item = get_object_or_404(
+        PreparationItem,
+        id=item_id,
+        user=request.user,
+    )
+
+    if request.method == "POST":
+
+        item_name = request.POST.get(
+            "item",
+            "",
+        ).strip()
+
+        category = request.POST.get(
+            "category",
+            "",
+        ).strip()
+
+        valid_categories = {
+            choice[0]
+            for choice in PreparationItem.CATEGORY_CHOICES
+        }
+
+        if item_name and category in valid_categories:
+
+            item.item = item_name
+            item.category = category
+            item.save(
+                update_fields=[
+                    "item",
+                    "category",
+                ]
+            )
+
+            section_map = {
+                "Vehicle": "vehicle-checks",
+                "Safety": "safety-checks",
+                "Documents": "document-checks",
+                "Tools": "tool-checks",
+            }
+
+            section = section_map.get(
+                category,
+                "vehicle-checks",
+            )
+
+            url = reverse(
+                "preparation:event_preparation",
+                args=[item.event.id],
+            )
+
+            return redirect(
+                f"{url}#{section}"
+            )
+
+    return render(
+        request,
+        "preparation/edit_preparation_item.html",
+        {
+            "item": item,
+            "event": item.event,
+        },
+    )
+
+# ==========================================
+# DELETE PREPARATION ITEM
+# ==========================================
+
+@login_required
+def delete_preparation_item(request, item_id):
+
+    item = get_object_or_404(
+        PreparationItem,
+        id=item_id,
+        user=request.user,
+    )
+
+    event = item.event
+    category = item.category
+
+    if request.method == "POST":
+
+        item.delete()
+
+        section_map = {
+            "Vehicle": "vehicle-checks",
+            "Safety": "safety-checks",
+            "Documents": "document-checks",
+            "Tools": "tool-checks",
+        }
+
+        section = section_map.get(
+            category,
+            "vehicle-checks",
+        )
+
+        url = reverse(
+            "preparation:event_preparation",
+            args=[event.id],
+        )
+
+        return redirect(
+            f"{url}#{section}"
+        )
+
+    return render(
+        request,
+        "preparation/delete_preparation_item.html",
+        {
+            "item": item,
+            "event": event,
+        },
+    )

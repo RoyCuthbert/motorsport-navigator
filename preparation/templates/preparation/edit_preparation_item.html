@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Preparation Item
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted">
+                        Editing preparation for
+                        <strong>{{ event.title }}</strong>
+                    </p>
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+
+                            <label
+                                for="item"
+                                class="form-label fw-bold">
+
+                                Preparation Item
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="item"
+                                name="item"
+                                maxlength="100"
+                                value="{{ item.item }}"
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <label
+                                for="category"
+                                class="form-label fw-bold">
+
+                                Category
+
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="category"
+                                name="category"
+                                required>
+
+                                <option
+                                    value="Vehicle"
+                                    {% if item.category == "Vehicle" %}selected{% endif %}>
+
+                                    Vehicle Checks
+
+                                </option>
+
+                                <option
+                                    value="Safety"
+                                    {% if item.category == "Safety" %}selected{% endif %}>
+
+                                    Safety Equipment
+
+                                </option>
+
+                                <option
+                                    value="Documents"
+                                    {% if item.category == "Documents" %}selected{% endif %}>
+
+                                    Documents
+
+                                </option>
+
+                                <option
+                                    value="Tools"
+                                    {% if item.category == "Tools" %}selected{% endif %}>
+
+                                    Tools & Spares
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="bi bi-check-lg"></i>
+                                Save Changes
+
+                            </button>
+
+                            <a
+                                href="{% url 'preparation:event_preparation' event.id %}"
+                                class="btn btn-outline-secondary">
+
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
