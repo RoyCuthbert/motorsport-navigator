@@ -114,7 +114,35 @@
 
     <div class="card-body text-center py-4">
 
-        {% if days_remaining > 0 %}
+        {% if event.status == "Cancelled" %}
+
+        <div class="text-secondary">
+
+            <h2 class="display-4 fw-bold mb-0">
+                Cancelled
+            </h2>
+
+            <p class="lead mb-0">
+                Event no longer active
+            </p>
+
+        </div>
+
+        {% elif event.status == "Completed" %}
+
+        <div class="text-secondary">
+
+            <h2 class="display-4 fw-bold mb-0">
+                Completed
+            </h2>
+
+            <p class="lead mb-0">
+                Event has finished
+            </p>
+
+        </div>
+
+        {% elif days_remaining > 0 %}
 
         <div class="text-success">
 
@@ -380,38 +408,37 @@
                 📋 Review Event
 
             </button>
-            
+
         </div>
         <div class="mt-3">
 
-    <a href="{% url 'events:edit_event_review' event.id %}"
-       class="btn btn-outline-primary">
+            <a href="{% url 'events:edit_event_review' event.id %}" class="btn btn-outline-primary">
 
-        {% if event.review_notes %}
-            ✏️ Edit Review Note
-        {% else %}
-            📝 Add Review Note
-        {% endif %}
+                {% if event.review_notes %}
+                ✏️ Edit Review Note
+                {% else %}
+                📝 Add Review Note
+                {% endif %}
 
-    </a>
-{% if event.review_notes %}
+            </a>
+            {% if event.review_notes %}
 
-<hr>
+            <hr>
 
-<div class="mt-3">
+            <div class="mt-3">
 
-    <h6 class="fw-bold">
-        📝 Post-Event Notes
-    </h6>
+                <h6 class="fw-bold">
+                    📝 Post-Event Notes
+                </h6>
 
-    <div class="bg-light border rounded p-3">
-        {{ event.review_notes|linebreaksbr }}
-    </div>
+                <div class="bg-light border rounded p-3">
+                    {{ event.review_notes|linebreaksbr }}
+                </div>
 
-</div>
+            </div>
 
-{% endif %}
-</div>
+            {% endif %}
+        </div>
     </div>
 
 </div>

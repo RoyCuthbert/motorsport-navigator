@@ -249,7 +249,19 @@
 
                                         <td>
 
-                                            {% if event.total_checks == 0 %}
+                                            {% if event.status == "Cancelled" %}
+
+                                            <span class="badge bg-secondary">
+                                                Event Cancelled
+                                            </span>
+
+                                            {% elif event.status == "Completed" %}
+
+                                            <span class="badge bg-secondary">
+                                                Event Completed
+                                            </span>
+
+                                            {% elif event.total_checks == 0 %}
 
                                             <span class="badge bg-secondary">
                                                 Not Started
@@ -282,7 +294,20 @@
                                         <th>⏳ Countdown</th>
 
                                         <td>
-                                            {% if event.days_remaining > 1 %}
+
+                                            {% if event.status == "Cancelled" %}
+
+                                            <span class="text-secondary">
+                                                Cancelled
+                                            </span>
+
+                                            {% elif event.status == "Completed" %}
+
+                                            <span class="text-secondary">
+                                                Completed
+                                            </span>
+
+                                            {% elif event.days_remaining > 1 %}
 
                                             {{ event.days_remaining }} Days Remaining
 
@@ -299,6 +324,7 @@
                                             Completed
 
                                             {% endif %}
+
                                         </td>
                                     </tr>
 
@@ -308,28 +334,28 @@
 
                                         <td>
 
-                                            {% if event.days_remaining > 0 %}
+                                            {% if event.status == "Cancelled" %}
 
-                                            <span class="badge bg-success">
+                                            <span class="badge bg-secondary">
+                                                Cancelled
+                                            </span>
 
-                                                Upcoming
+                                            {% elif event.status == "Completed" %}
 
+                                            <span class="badge bg-secondary">
+                                                Completed
                                             </span>
 
                                             {% elif event.days_remaining == 0 %}
 
                                             <span class="badge bg-warning text-dark">
-
                                                 Running Today
-
                                             </span>
 
                                             {% else %}
 
-                                            <span class="badge bg-secondary">
-
-                                                Completed
-
+                                            <span class="badge bg-success">
+                                                Upcoming
                                             </span>
 
                                             {% endif %}

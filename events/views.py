@@ -84,7 +84,17 @@ def events(request):
             event.progress = 0
 
         # Preparation status
-        if total_checks == 0:
+        if event.status == "Cancelled":
+
+            event.preparation_status = "Event Cancelled"
+            event.preparation_status_class = "secondary"
+
+        elif event.status == "Completed":
+
+            event.preparation_status = "Event Completed"
+            event.preparation_status_class = "secondary"
+
+        elif total_checks == 0:
 
             event.preparation_status = "Not Started"
             event.preparation_status_class = "secondary"
