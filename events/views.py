@@ -359,6 +359,11 @@ def event_detail(request, event_id):
         event_readiness_class = "secondary"
         event_readiness_icon = "⚪"
 
+    elif not event.vehicle:
+        event_readiness = "Vehicle Required"
+        event_readiness_class = "danger"
+        event_readiness_icon = "🔴"
+
     elif high_priority_overdue_tasks > 0:
 
         event_readiness = "Not Ready"
