@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0 text-center">
+
+                <div class="card-body py-5">
+
+                    <div class="display-1 mb-3">
+                        🏁
+                    </div>
+
+                    <h1 class="display-4 fw-bold text-danger">
+                        404
+                    </h1>
+
+                    <h2 class="fw-bold mb-3">
+                        Page Not Found
+                    </h2>
+
+                    <p class="lead text-muted mb-4">
+                        The page or motorsport record you are looking for
+                        could not be found.
+                    </p>
+
+                    <p class="text-muted mb-4">
+                        It may have been removed, the address may be incorrect,
+                        or you may not have permission to access it.
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+
+                        <a href="/"
+                           class="btn btn-danger">
+                            <i class="bi bi-house"></i>
+                            Home
+                        </a>
+
+                        <a href="{% url 'events:events' %}"
+                           class="btn btn-outline-primary">
+                            <i class="bi bi-flag-fill"></i>
+                            Events Centre
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
