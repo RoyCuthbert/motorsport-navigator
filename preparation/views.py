@@ -48,10 +48,10 @@ def preparation(request, event_id=None):
 
     current_vehicle = None
 
-    vehicle_checks = []
-    safety_checks = []
-    document_checks = []
-    tool_checks = []
+    vehicle_checks = PreparationItem.objects.none()
+    safety_checks = PreparationItem.objects.none()
+    document_checks = PreparationItem.objects.none()
+    tool_checks = PreparationItem.objects.none()
 
     # -----------------------------------------
     # EVENT VEHICLE & CHECKLIST
