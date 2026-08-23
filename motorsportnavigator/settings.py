@@ -33,6 +33,7 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [ "127.0.0.1",
     "localhost",
+    "motorsport-navigator-124398e60b59.herokuapp.com",
 ]
 
 
