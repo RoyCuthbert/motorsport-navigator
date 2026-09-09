@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 import calendar
@@ -13,15 +14,6 @@ from .forms import EventForm, EventTaskForm
 @login_required
 def events(request):
 
-    # Automatically complete past upcoming events
-    Event.objects.filter(
-        user=request.user,
-        status="Upcoming",
-        event_date__lt=date.today(),
-    ).update(
-        status="Completed",
-        selected=False,
-    )
 
     events = Event.objects.filter(
         user=request.user
@@ -114,6 +106,35 @@ def events(request):
             event.preparation_status = "Preparation Required"
             event.preparation_status_class = "danger"
 
+        # -----------------------------------------
+        # DISPLAY STATUS
+        # -----------------------------------------
+
+        if event.status == "Cancelled":
+
+            event.display_status = "Cancelled"
+            event.display_status_class = "secondary"
+
+        elif event.status == "Completed":
+
+            event.display_status = "Completed"
+            event.display_status_class = "secondary"
+
+        elif event.event_date < date.today():
+
+            event.display_status = "Awaiting Review"
+            event.display_status_class = "warning"
+
+        elif event.event_date == date.today():
+
+            event.display_status = "Event Today"
+            event.display_status_class = "warning"
+
+        else:
+
+            event.display_status = "Upcoming"
+            event.display_status_class = "success"
+
     return render(
         request,
         "events/events.html",
@@ -141,21 +162,6 @@ def event_detail(request, event_id):
         id=event_id,
         user=request.user,
     )
-
-        # Automatically complete events once their date has passed
-    if (
-        event.status == "Upcoming"
-        and event.event_date < date.today()
-    ):
-        event.status = "Completed"
-        event.selected = False
-
-        event.save(
-            update_fields=[
-                "status",
-                "selected",
-            ]
-        )
 
     preparation_checks = PreparationItem.objects.filter(
         user=request.user,
@@ -369,7 +375,14 @@ def event_detail(request, event_id):
         event_readiness_class = "secondary"
         event_readiness_icon = "⚪"
 
+    elif event.event_date < date.today():
+
+        event_readiness = "Awaiting Review"
+        event_readiness_class = "warning"
+        event_readiness_icon = "🟠"
+
     elif not event.vehicle:
+
         event_readiness = "Vehicle Required"
         event_readiness_class = "danger"
         event_readiness_icon = "🔴"
@@ -714,6 +727,39 @@ def cancel_event(request, event_id):
     event.status = "Cancelled"
     event.selected = False
     event.save()
+
+    return redirect(
+        "events:event_detail",
+        event_id=event.id,
+    )
+
+@require_POST
+@login_required
+def complete_event(request, event_id):
+
+    event = get_object_or_404(
+        Event,
+        id=event_id,
+        user=request.user,
+    )
+
+    # A cancelled event should be reopened
+    # before it can be completed.
+    if event.status == "Cancelled":
+        return redirect(
+            "events:event_detail",
+            event_id=event.id,
+        )
+
+    event.status = "Completed"
+    event.selected = False
+
+    event.save(
+        update_fields=[
+            "status",
+            "selected",
+        ]
+    )
 
     return redirect(
         "events:event_detail",

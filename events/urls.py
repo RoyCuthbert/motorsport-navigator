@@ -10,6 +10,7 @@ urlpatterns = [
     path("select/<int:event_id>/", views.select_event, name="select_event"),
     path("<int:event_id>/", views.event_detail, name="event_detail"),
     path("<int:event_id>/cancel/", views.cancel_event, name="cancel_event"),
+    path("<int:event_id>/complete/", views.complete_event, name="complete_event"),
     path("<int:event_id>/reopen/", views.reopen_event, name="reopen_event"),
     path("edit/<int:event_id>/", views.edit_event, name="edit_event"),
     path("<int:event_id>/review/", views.edit_event_review, name="edit_event_review",),

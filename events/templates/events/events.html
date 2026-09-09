@@ -321,7 +321,9 @@
 
                                             {% else %}
 
-                                            Completed
+                                            <span class="text-warning">
+                                                Awaiting Review
+                                            </span>
 
                                             {% endif %}
 
@@ -334,31 +336,9 @@
 
                                         <td>
 
-                                            {% if event.status == "Cancelled" %}
-
-                                            <span class="badge bg-secondary">
-                                                Cancelled
+                                            <span class="badge bg-{{ event.display_status_class }}">
+                                                {{ event.display_status }}
                                             </span>
-
-                                            {% elif event.status == "Completed" %}
-
-                                            <span class="badge bg-secondary">
-                                                Completed
-                                            </span>
-
-                                            {% elif event.days_remaining == 0 %}
-
-                                            <span class="badge bg-warning text-dark">
-                                                Running Today
-                                            </span>
-
-                                            {% else %}
-
-                                            <span class="badge bg-success">
-                                                Upcoming
-                                            </span>
-
-                                            {% endif %}
 
                                         </td>
 
