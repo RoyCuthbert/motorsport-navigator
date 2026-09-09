@@ -24,10 +24,11 @@ urlpatterns = [
     path("", include("core.urls")),
 
     path("accounts/", include("accounts.urls")),
-
     path("accounts/", include("allauth.urls")),
 
     path("clubs/", include("clubs.urls")),
+
+    path("codrivers/", include("codrivers.urls")),
 
     path("events/", include("events.urls")),
 
