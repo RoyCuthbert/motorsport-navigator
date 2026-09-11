@@ -51,6 +51,11 @@ class Event(models.Model):
         related_name="events",
     )
 
+    completed_co_driver_name = models.CharField(
+        max_length=101,
+        blank=True,
+    )
+
     title = models.CharField(max_length=100)
 
     event_type = models.CharField(

@@ -231,7 +231,9 @@
                                     <tr>
                                         <th>🧭 Co-driver</th>
                                         <td>
-                                            {% if event.co_driver %}
+                                            {% if event.completed_co_driver_name %}
+                                            {{ event.completed_co_driver_name }}
+                                            {% elif event.co_driver %}
                                             {{ event.co_driver.first_name }}
                                             {{ event.co_driver.last_name }}
                                             {% else %}

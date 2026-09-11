@@ -761,10 +761,19 @@ def complete_event(request, event_id):
     event.status = "Completed"
     event.selected = False
 
+    if event.co_driver:
+        event.completed_co_driver_name = (
+            f"{event.co_driver.first_name} "
+            f"{event.co_driver.last_name}"
+        ).strip()
+    else:
+        event.completed_co_driver_name = ""
+
     event.save(
         update_fields=[
             "status",
             "selected",
+            "completed_co_driver_name",
         ]
     )
 

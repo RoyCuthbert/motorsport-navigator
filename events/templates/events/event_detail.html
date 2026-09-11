@@ -1085,9 +1085,13 @@
                         <div>
 
                             <strong>Co-driver:</strong>
-                            <div>{% if event.co_driver %}
+                            <div> {% if event.completed_co_driver_name %}
+                                {{ event.completed_co_driver_name }}
+
+                                {% elif event.co_driver %}
                                 {{ event.co_driver.first_name }}
                                 {{ event.co_driver.last_name }}
+
                                 {% else %}
                                 Not assigned
                                 {% endif %}
