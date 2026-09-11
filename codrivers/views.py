@@ -1,6 +1,9 @@
+from django.views.decorators.http import require_POST
+
 from django.contrib.auth.decorators import login_required
+
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import DriverProfile
 
@@ -28,9 +31,9 @@ def add_codriver(request):
         form = CoDriverProfileForm(request.POST)
 
         if form.is_valid():
-            codriver = form.save()
-            codriver.drivers.add(driver_profile)
-
+            codriver = form.save(commit=False)
+            codriver.driver = driver_profile
+            codriver.save()
             return redirect("dashboard:dashboard")
 
     else:
@@ -47,3 +50,108 @@ def add_codriver(request):
         "codrivers/add_codriver.html",
         context,
     )
+
+@login_required
+def codriver_list(request):
+    driver_profile = DriverProfile.objects.get(
+        user=request.user,
+    )
+
+    codrivers = driver_profile.codrivers.all().order_by(
+        "first_name",
+        "last_name",
+    )
+
+    context = {
+        "codrivers": codrivers,
+        "codriver_count": codrivers.count(),
+        "remaining_slots": 5 - codrivers.count(),
+    }
+
+    return render(
+        request,
+        "codrivers/codriver_list.html",
+        context,
+    )
+
+@login_required
+def codriver_detail(request, pk):
+    driver_profile = DriverProfile.objects.get(
+        user=request.user,
+    )
+
+    codriver = get_object_or_404(
+        driver_profile.codrivers.all(),
+        pk=pk,
+    )
+
+    context = {
+        "codriver": codriver,
+    }
+
+    return render(
+        request,
+        "codrivers/codriver_detail.html",
+        context,
+    )
+@login_required
+def edit_codriver(request, pk):
+    driver_profile = DriverProfile.objects.get(
+        user=request.user,
+    )
+
+    codriver = get_object_or_404(
+        driver_profile.codrivers.all(),
+        pk=pk,
+    )
+
+    if request.method == "POST":
+        form = CoDriverProfileForm(
+            request.POST,
+            instance=codriver,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            return redirect(
+                "codriver_detail",
+                pk=codriver.pk,
+            )
+
+    else:
+        form = CoDriverProfileForm(
+            instance=codriver,
+        )
+
+    context = {
+        "form": form,
+        "codriver": codriver,
+    }
+
+    return render(
+        request,
+        "codrivers/edit_codriver.html",
+        context,
+    )
+
+@login_required
+@require_POST
+def delete_codriver(request, pk):
+    driver_profile = DriverProfile.objects.get(
+        user=request.user,
+    )
+
+    codriver = get_object_or_404(
+        driver_profile.codrivers.all(),
+        pk=pk,
+    )
+
+    codriver.delete()
+
+    messages.success(
+        request,
+        "Co-driver deleted successfully.",
+    )
+
+    return redirect("codriver_list")

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1>My Co-drivers</h1>
+
+            <p class="mb-0">
+                {{ codriver_count }} of 5 co-driver slots used.
+                {{ remaining_slots }} remaining.
+            </p>
+        </div>
+
+        <a href="{% url 'add_codriver' %}" class="btn btn-primary">
+            Add Co-driver
+        </a>
+    </div>
+
+    {% if codrivers %}
+
+    <div class="list-group">
+
+        {% for codriver in codrivers %}
+
+        <a href="{% url 'codriver_detail' codriver.pk %}" class="list-group-item list-group-item-action">
+
+            <h5 class="mb-1">
+                {{ codriver.first_name }}
+                {{ codriver.last_name }}
+            </h5>
+
+            {% if codriver.motorsport_uk_number %}
+            <p class="mb-1">
+                Motorsport UK:
+                {{ codriver.motorsport_uk_number }}
+            </p>
+            {% endif %}
+
+            {% if codriver.club_membership_number %}
+            <p class="mb-1">
+                Club Membership:
+                {{ codriver.club_membership_number }}
+            </p>
+            {% endif %}
+
+            {% if codriver.email %}
+            <p class="mb-0">
+                {{ codriver.email }}
+            </p>
+            {% endif %}
+
+        </a>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<p>
+    You have not added any co-drivers yet.
+</p>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

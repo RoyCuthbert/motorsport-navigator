@@ -3,10 +3,11 @@ from django.db import models
 from accounts.models import DriverProfile
 # Create your models here.
 class CoDriverProfile(models.Model):
-    drivers = models.ManyToManyField(
-    DriverProfile,
-    related_name="codrivers",
-)
+    driver = models.ForeignKey(
+        DriverProfile,
+        on_delete=models.CASCADE,
+        related_name="codrivers",
+    )
 
     # Personal Details
 
@@ -82,7 +83,7 @@ class CoDriverProfile(models.Model):
 
     def __str__(self):
         full_name = f"{self.first_name} {self.last_name}".strip()
-        return full_name or "Co-driver"
+        return full_name or f"Co-driver for {self.driver}"
 
 class CoDriverEmergencyContact(models.Model):
     profile = models.OneToOneField(

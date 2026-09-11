@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h1>
+                {{ codriver.first_name }}
+                {{ codriver.last_name }}
+            </h1>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="{% url 'edit_codriver' codriver.pk %}" class="btn btn-primary">
+                Edit Co-driver
+            </a>
+
+            <a href="{% url 'codriver_list' %}" class="btn btn-secondary">
+                Back to Co-drivers
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <h5 class="card-title">
+                Personal Details
+            </h5>
+
+            <p>
+                <strong>Date of Birth:</strong>
+                {{ codriver.date_of_birth|default:"Not provided" }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ codriver.email }}
+            </p>
+
+            <p>
+                <strong>Phone:</strong>
+                {{ codriver.phone_number|default:"Not provided" }}
+            </p>
+
+            <hr>
+
+            <h5>
+                Address
+            </h5>
+
+            <p class="mb-1">
+                {{ codriver.address_line_1 }}
+            </p>
+
+            {% if codriver.address_line_2 %}
+            <p class="mb-1">
+                {{ codriver.address_line_2 }}
+            </p>
+            {% endif %}
+
+            {% if codriver.town %}
+            <p class="mb-1">
+                {{ codriver.town }}
+            </p>
+            {% endif %}
+
+            {% if codriver.postcode %}
+            <p>
+                {{ codriver.postcode }}
+            </p>
+            {% endif %}
+
+            <hr>
+
+            <h5>
+                Motorsport Details
+            </h5>
+
+            <p>
+                <strong>Motorsport UK Number:</strong>
+                {{ codriver.motorsport_uk_number|default:"Not provided" }}
+            </p>
+
+            <p>
+                <strong>Club Membership Number:</strong>
+                {{ codriver.club_membership_number|default:"Not provided" }}
+            </p>
+
+            {% if codriver.bio %}
+            <hr>
+
+            <h5>
+                Bio
+            </h5>
+
+            <p>
+                {{ codriver.bio }}
+            </p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
