@@ -6,6 +6,11 @@
 
     <h1>Add Co-driver</h1>
 
+    <p>
+    You currently have {{ codriver_count }} co-driver{{ codriver_count|pluralize }}.
+    You can add {{ remaining_slots }} more.
+    </p>
+
     <form method="POST">
         {% csrf_token %}
 
