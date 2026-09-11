@@ -5,6 +5,14 @@
 {% block content %}
 
 <div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
 
     <h1 class="mb-4">
         Welcome {{ user.first_name|default:user.username }}

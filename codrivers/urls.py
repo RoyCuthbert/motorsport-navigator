@@ -8,5 +8,5 @@ urlpatterns = [
     path("add/",views.add_codriver,name="add_codriver"),
     path("<int:pk>/",views.codriver_detail,name="codriver_detail"),
     path("<int:pk>/edit/", views.edit_codriver, name="edit_codriver"),
-    
+    path("<int:pk>/delete/", views.delete_codriver, name="delete_codriver"),
 ]
