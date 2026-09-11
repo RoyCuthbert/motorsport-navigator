@@ -605,7 +605,10 @@ def add_event(request):
 
     if request.method == "POST":
 
-        form = EventForm(request.POST)
+        form = EventForm(
+            request.POST,
+            user=request.user,
+        )
 
         form.fields["vehicle"].queryset = Vehicle.objects.filter(
             owner=request.user
@@ -623,7 +626,9 @@ def add_event(request):
 
     else:
 
-        form = EventForm()
+        form = EventForm(
+            user=request.user,
+        )
 
         form.fields["vehicle"].queryset = Vehicle.objects.filter(
             owner=request.user
@@ -685,6 +690,7 @@ def edit_event(request, event_id):
         form = EventForm(
             request.POST,
             instance=event,
+            user=request.user,
         )
 
         form.fields["vehicle"].queryset = Vehicle.objects.filter(
@@ -701,6 +707,7 @@ def edit_event(request, event_id):
 
         form = EventForm(
             instance=event,
+            user=request.user,
         )
 
         form.fields["vehicle"].queryset = Vehicle.objects.filter(

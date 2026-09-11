@@ -43,6 +43,14 @@ class Event(models.Model):
         blank=True,
     )
 
+    co_driver = models.ForeignKey(
+        "codrivers.CoDriverProfile",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="events",
+    )
+
     title = models.CharField(max_length=100)
 
     event_type = models.CharField(

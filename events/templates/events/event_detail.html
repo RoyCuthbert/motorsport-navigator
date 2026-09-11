@@ -1071,7 +1071,7 @@
                         </div>
 
 
-                        <div>
+                        <div class="mb-3">
 
                             <strong>
                                 👤 Organiser
@@ -1079,6 +1079,18 @@
 
                             <div>
                                 {{ event.organiser|default:"Not Set" }}
+                            </div>
+
+                        </div>
+                        <div>
+
+                            <strong>Co-driver:</strong>
+                            <div>{% if event.co_driver %}
+                                {{ event.co_driver.first_name }}
+                                {{ event.co_driver.last_name }}
+                                {% else %}
+                                Not assigned
+                                {% endif %}
                             </div>
 
                         </div>

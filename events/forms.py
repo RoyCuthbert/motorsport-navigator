@@ -5,6 +5,17 @@ from .models import Event, EventTask
 
 class EventForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields["co_driver"].queryset = (
+                self.fields["co_driver"]
+                .queryset
+                .filter(driver__user=user)
+            )
+
     class Meta:
 
         model = Event
@@ -16,6 +27,7 @@ class EventForm(forms.ModelForm):
             "event_date",
             "organiser",
             "vehicle",
+            "co_driver",
         ]
 
         widgets = {

@@ -134,7 +134,16 @@
                         <i class="bi bi-person-fill"></i>
                         {{ active_event.organiser }}
                     </p>
+                    <p class="mb-1">
+                        <i class="bi bi-compass-fill"></i>
 
+                        {% if active_event.co_driver %}
+                        {{ active_event.co_driver.first_name }}
+                        {{ active_event.co_driver.last_name }}
+                        {% else %}
+                        Co-driver not assigned
+                        {% endif %}
+                    </p>
                     <p>
                         <i class="bi bi-car-front-fill"></i>
 
@@ -219,7 +228,19 @@
                                         <th>👤 Organiser</th>
                                         <td>{{ event.organiser|default:"Not Set" }}</td>
                                     </tr>
-
+                                    <tr>
+                                        <th>🧭 Co-driver</th>
+                                        <td>
+                                            {% if event.co_driver %}
+                                            {{ event.co_driver.first_name }}
+                                            {{ event.co_driver.last_name }}
+                                            {% else %}
+                                            <span class="text-muted">
+                                                Not assigned
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
                                     <tr>
 
                                         <th>🚗 Vehicle</th>
