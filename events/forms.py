@@ -16,6 +16,17 @@ class EventForm(forms.ModelForm):
                 .filter(driver__user=user)
             )
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        attendance_role = cleaned_data.get("attendance_role")
+
+        if attendance_role and attendance_role != "Competitor":
+            cleaned_data["vehicle"] = None
+            cleaned_data["co_driver"] = None
+
+        return cleaned_data
+
     class Meta:
 
         model = Event
@@ -23,6 +34,7 @@ class EventForm(forms.ModelForm):
         fields = [
             "title",
             "event_type",
+            "attendance_role",
             "venue",
             "event_date",
             "organiser",

@@ -31,6 +31,14 @@ class Event(models.Model):
         ("Cancelled", "Cancelled"),
     ]
 
+    ATTENDANCE_ROLES = [
+        ("Competitor", "Competitor"),
+        ("Service Crew", "Service Crew"),
+        ("Spectator", "Spectator"),
+        ("Marshal", "Marshal"),
+        ("Other", "Other"),
+    ]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -62,6 +70,12 @@ class Event(models.Model):
             max_length=50,
             choices=EVENT_TYPES,
             default="Road Rally",
+    )
+
+    attendance_role = models.CharField(
+        max_length=20,
+        choices=ATTENDANCE_ROLES,
+        default="Competitor",
     )
 
     organiser = models.CharField(
@@ -105,6 +119,47 @@ class Event(models.Model):
     @property
     def days_remaining(self):
         return (self.event_date - date.today()).days
+
+class SharedEvent(models.Model):
+
+    title = models.CharField(
+        max_length=100,
+    )
+
+    event_type = models.CharField(
+        max_length=50,
+        choices=EVENT_TYPES,
+        default="Road Rally",
+    )
+
+    organiser = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    venue = models.CharField(
+        max_length=100,
+    )
+
+    event_date = models.DateField()
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    is_published = models.BooleanField(
+        default=False,
+    )
+
+    created_on = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ["event_date"]
+
+    def __str__(self):
+        return self.title
 
 class EventTask(models.Model):
 

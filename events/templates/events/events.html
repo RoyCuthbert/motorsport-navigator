@@ -215,6 +215,12 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                        <th>Attending as</th>
+                                        <td>
+                                            {{ event.get_attendance_role_display }}
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>📅 Date</th>
                                         <td>{{ event.event_date|date:"d M Y" }}</td>
                                     </tr>
