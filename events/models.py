@@ -44,6 +44,14 @@ class Event(models.Model):
         on_delete=models.CASCADE,
     )
 
+    shared_event = models.ForeignKey(
+        "events.SharedEvent",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="personal_events",
+    )
+
     vehicle = models.ForeignKey(
         "garage.Vehicle",
         on_delete=models.SET_NULL,

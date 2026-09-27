@@ -36,7 +36,7 @@
                     ⛔ Cancelled
                 </span>
 
-                {% elif event.status == "Completed"}
+                {% elif event.status == "Completed" %}
 
                 <span class="badge bg-success fs-6 px-3 py-2">
                     ✅ Completed
@@ -649,7 +649,6 @@
 
         <div class="card-body">
 
-            {% endif %}
 
             <!-- ==========================================
      TASK ATTENTION SUMMARY
@@ -833,9 +832,10 @@
 
             </div>
 
-            {% if event.status == "Completed" %}
+        
         </div>
-        {% endif %}
+        
+    {% endif %}
 
         <!-- ==========================================
      QUICK EVENT HUB
@@ -1053,6 +1053,7 @@
                                 {{ event.get_attendance_role_display }}
                             </div>
                         </div>
+
                         <div class="mb-3">
 
                             <strong>
@@ -1570,15 +1571,11 @@
         </div>
 
         {% endif %}
-        {% if event.status == "Completed" %}
-
-    </div>
+        
 
 </div>
 
-</div>
 
-{% endif %}
 
 <!-- ==========================================
      EVENT ACTIONS

@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 import calendar
@@ -7,9 +8,9 @@ from collections import defaultdict
 from datetime import date
 
 from preparation.models import PreparationItem
-from .models import Event, EventTask, EVENT_TYPES 
+from .models import Event, EventTask, EVENT_TYPES, SharedEvent
 from garage.models import Vehicle
-from .forms import EventForm, EventTaskForm
+from .forms import EventForm, EventTaskForm, SharedEventSelectionForm
 # Create your views here.
 @login_required
 def events(request):
@@ -1422,5 +1423,90 @@ def edit_event_review(request, event_id):
         "events/edit_event_review.html",
         {
             "event": event,
+        },
+    )
+
+@login_required
+def shared_events(request):
+    available_events = SharedEvent.objects.filter(
+        is_published=True
+    ).order_by("event_date")
+
+    added_event_ids = set(
+        Event.objects.filter(
+            user=request.user,
+            shared_event__isnull=False,
+        ).values_list("shared_event_id", flat=True)
+    )
+
+    for event in available_events:
+        event.already_added = event.id in added_event_ids
+
+    return render(
+        request,
+        "events/shared_events.html",
+        {
+            "available_events": available_events,
+        },
+    )
+
+@login_required
+def add_shared_event(request, event_id):
+
+    shared_event = get_object_or_404(
+        SharedEvent,
+        id=event_id,
+        is_published=True,
+    )
+
+    # Prevent the same user from adding the event twice.
+    already_added = Event.objects.filter(
+        user=request.user,
+        shared_event=shared_event,
+    ).exists()
+
+    if already_added:
+        messages.info(
+            request,
+            "You have already added this event to your Events Centre."
+        )
+        return redirect("events:events")
+
+    if request.method == "POST":
+        form = SharedEventSelectionForm(request.POST)
+
+        if form.is_valid():
+            personal_event = Event.objects.create(
+                user=request.user,
+                shared_event=shared_event,
+                title=shared_event.title,
+                event_type=shared_event.event_type,
+                organiser=shared_event.organiser,
+                venue=shared_event.venue,
+                event_date=shared_event.event_date,
+                attendance_role=form.cleaned_data[
+                    "attendance_role"
+                ],
+            )
+
+            messages.success(
+                request,
+                "Event successfully added to your Events Centre."
+            )
+
+            return redirect(
+                "events:event_detail",
+                event_id=personal_event.id,
+            )
+
+    else:
+        form = SharedEventSelectionForm()
+
+    return render(
+        request,
+        "events/add_shared_event.html",
+        {
+            "shared_event": shared_event,
+            "form": form,
         },
     )

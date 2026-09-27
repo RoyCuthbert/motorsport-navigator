@@ -12,29 +12,41 @@
                     <a class="nav-link" href="/">Home</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Events</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="eventsDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Events
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="eventsDropdown">
+
+                        <li>
+                            <a class="dropdown-item" href="{% url 'events:events' %}">
+                                My Events
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{% url 'events:shared_events' %}">
+                                Shared Events
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{% url 'events:season_dashboard' %}">
+                                Season Dashboard
+                            </a>
+                        </li>
+
+                    </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Clubs</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Membership</a>
-                </li>
+        
 
                 {% if user.is_authenticated %}
 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'dashboard:dashboard' %}">Dashboard</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:season_dashboard' %}">
-                        <i class="bi bi-speedometer2"></i>
-                        Season Dashboard
-                    </a>
                 </li>
 
                 <li class="nav-item">

@@ -48,6 +48,14 @@ class EventForm(forms.ModelForm):
             ),
         }
 
+class SharedEventSelectionForm(forms.Form):
+
+    attendance_role = forms.ChoiceField(
+        choices=Event.ATTENDANCE_ROLES,
+        initial="Competitor",
+        label="How are you attending?",
+    )
+    
 class EventTaskForm(forms.ModelForm):
 
     class Meta:

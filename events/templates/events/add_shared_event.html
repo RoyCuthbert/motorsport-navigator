@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-danger text-white">
+            <h2 class="mb-0">
+                🏁 Add Event to My Events
+            </h2>
+        </div>
+
+        <div class="card-body">
+
+            <h4>{{ shared_event.title }}</h4>
+
+            <hr>
+
+            <p>
+                <strong>Event type:</strong>
+                {{ shared_event.get_event_type_display }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ shared_event.event_date|date:"d M Y" }}
+            </p>
+
+            <p>
+                <strong>Venue:</strong>
+                {{ shared_event.venue }}
+            </p>
+
+            {% if shared_event.organiser %}
+                <p>
+                    <strong>Organiser:</strong>
+                    {{ shared_event.organiser }}
+                </p>
+            {% endif %}
+
+            {% if shared_event.description %}
+                <p>
+                    {{ shared_event.description|linebreaksbr }}
+                </p>
+            {% endif %}
+
+            <hr>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <div class="mt-4">
+
+                    <button type="submit"
+                            class="btn btn-danger btn-lg">
+                        Add to My Events
+                    </button>
+
+                    <a href="{% url 'events:shared_events' %}"
+                       class="btn btn-secondary btn-lg">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
